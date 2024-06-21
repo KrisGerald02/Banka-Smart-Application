@@ -1,1 +1,7 @@
+General:
+  -Mejorar Rotulos de Transacciones
 
+
+Tarjetas de Credito
+  Falta
+    -Creacion
