@@ -1,7 +1,18 @@
 General:
-  -Mejorar Rotulos de Transacciones
+  -Mejorar Rotulos de Transacciones {Referencias {Facturas}} 
+  -Archivos de Cabecera {Contienen Estructuras y Funciones} 
 
+Modulo Transacciones: 
+  -Falta la Opcion de Crear o Solicitar Tarjeta de Credito 
+  -Falta la Opcion de: 
+    -La transferencia entre cuentas entre el mismo usuario y cuentas internacionales y de otros bancos 
+    -Lo anterior se requiere de condiciones como: Entre Bancos ( generar comision del 2 o 3% del total de la transferencia) 
 
-Tarjetas de Credito
-  Falta
-    -Creacion
+Modulo Informe: 
+  -TODO 
+
+Modulo Seguridad: 
+  -Para este modulo añadir una funcion que censure con ("*") los numeros de cuenta del usuario 
+  -Generar contraseñas con digitos especificos al inicio para reconocer el tipo de usuario (cliente o empleado) 
+  -Cliente : "CL123", Empleado : "BAC123". 
+  -Idea: Para la Contraseña del Cliente y Empleado agarrar los primeros 3 caracteres de su numbre y cumpleaños
