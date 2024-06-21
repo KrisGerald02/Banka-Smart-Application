@@ -2,6 +2,9 @@ General:
   -Mejorar Rotulos de Transacciones {Referencias {Facturas}} 
   -Archivos de Cabecera {Contienen Estructuras y Funciones} 
 
+Modulo Prestamos:
+  -Saldo Crediticio
+
 Modulo Transacciones: 
   -Falta la Opcion de Crear o Solicitar Tarjeta de Credito 
   -Falta la Opcion de: 
