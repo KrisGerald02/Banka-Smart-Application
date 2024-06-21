@@ -2,6 +2,9 @@ General:
   -Mejorar Rotulos de Transacciones {Referencias {Facturas}} 
   -Archivos de Cabecera {Contienen Estructuras y Funciones} 
 
+Modulo Cuentas:
+  -????????
+
 Modulo Prestamos:
   -Saldo Crediticio
 
