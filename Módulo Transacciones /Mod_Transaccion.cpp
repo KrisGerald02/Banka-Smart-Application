@@ -6,6 +6,10 @@ double saldoCuenta1 = 0.0;
 double saldoCuenta2 = 0.0;
 double deudaTarjetaCredito = 0.0;
 
+//Mejorar Rotulos en todo el cod
+//Referencias: Facturas
+
+
 void depositar(double &saldo, double cantidad) {
     if (cantidad > 0) {
         saldo += cantidad;
@@ -57,6 +61,7 @@ void pagarTarjetaCredito(double &saldo, double cantidad) {
     }
 }
 
+//Falta la Opcion de Crear o Solicitar Tarjeta de Credito
 void mostrarMenu() {
     cout << "\n--- Menu de Banka Smart Aplication ---\n";
     cout << "1. Depositar dinero en Cuenta 1\n";
@@ -83,7 +88,9 @@ void mostrarMenuServicios() {
 int main() {
     int opcion, opcionServicio;
     double cantidad;
-
+    //Falta la Opcion de:
+    //La transferencia entre cuentas entre el mismo usuario y cuentas internacionales y de otros bancos
+    //Lo anterior se requiere de condiciones como: Entre Bancos ( generar comision del 2 o 3% del total de la transferencia)
     do {
         mostrarMenu();
         cin >> opcion;
