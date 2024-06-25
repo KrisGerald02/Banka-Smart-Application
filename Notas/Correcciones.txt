@@ -14,5 +14,10 @@ Modulo Seguridad:
   -Idea: Para la Contraseña del Cliente y Empleado agarrar los primeros 3 caracteres de su numbre y cumpleaños
   -Cuando se solicite la modificacion de algo aadir preguntas de seugridad
 
+Si da tiempo:
+Poner en modulo de transaccion opcion perdida de tarjeta de debito o credito
+
+
+
 Nota:
 El modulo de seguridad se fusionara con el de cuentas una vez que este completado al 100%
