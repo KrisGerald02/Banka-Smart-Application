@@ -12,16 +12,6 @@ struct TarjetaDeCredito {
     int puntos;
 };
 
-// Funcion para inicializar la tarjeta de credito
-void inicializarTarjeta(TarjetaDeCredito &tarjeta, const string &num, const string &tit, double limite) {
-    tarjeta.numero = num;
-    tarjeta.titular = tit;
-    tarjeta.limite_credito = limite;
-    tarjeta.saldo = 0;
-    tarjeta.pagos_a_tiempo = 0;
-    tarjeta.puntos = 0;
-}
-
 // Funcion para realizar una compra
 void realizarCompra(TarjetaDeCredito &tarjeta, double monto) {
     if (monto + tarjeta.saldo > tarjeta.limite_credito) {
@@ -77,7 +67,13 @@ int main() {
     cout << "Ingrese el límite de crédito: ";
     cin >> limite;
 
-    inicializarTarjeta(tarjeta, numero, titular, limite);
+    // Inicializando la tarjeta directamente
+    tarjeta.numero = numero;
+    tarjeta.titular = titular;
+    tarjeta.limite_credito = limite;
+    tarjeta.saldo = 0;
+    tarjeta.pagos_a_tiempo = 0;
+    tarjeta.puntos = 0;
 
     cout << "Ingrese el monto de la compra: ";
     cin >> monto;
@@ -102,4 +98,3 @@ int main() {
 
     return 0;
 }
-
