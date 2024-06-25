@@ -7,13 +7,10 @@ Modulo Cuentas:
   -????????
 
 Modulo Prestamos:
-  -Saldo Crediticio
+  -Saldo Crediticio (listo solo falta añadir la condicion / requisito para solicitud de prestamo a este mismo modulo)
 
 Modulo Transacciones: 
   -Falta la Opcion de Crear o Solicitar Tarjeta de Credito (listo solo moverla del mod tarjeta de credito
-  -Falta la Opcion de: 
-    -La transferencia entre cuentas entre el mismo usuario y cuentas internacionales y de otros bancos 
-    -Lo anterior se requiere de condiciones como: Entre Bancos ( generar comision del 2 o 3% del total de la transferencia) 
 
 Modulo Informe: 
   -TODO 
