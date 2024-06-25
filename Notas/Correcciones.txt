@@ -4,12 +4,8 @@ General:
   -Determinar si se usara cordobas o dolares {depende de la opcion convertir de uno a otro}
   -Modulo Transacciones: Completado 100%
   -Modulo Prestamos: Completado 100%
-
-Modulo Cuentas:
-  -????????
-
-Modulo Informe: 
-  -TODO 
+  -Modulo Cuentas: ?
+  -Modulo Informe: FALTA TODO
 
 Modulo Seguridad: 
   -Para este modulo añadir una funcion que censure con ("*") los numeros de cuenta del usuario 
