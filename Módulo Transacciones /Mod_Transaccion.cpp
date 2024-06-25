@@ -90,11 +90,22 @@ void pagarTarjetaCredito(double &saldo, double cantidad) {
     if (cantidad > 0 && cantidad <= saldo) {
         saldo -= cantidad;
         deudaTarjetaCredito -= cantidad;
+        tarjeta.pagos_a_tiempo++;
+        tarjeta.puntos += cantidad * 0.01; // Añade 1 punto por cada $100 pagados
         cout << "Has pagado $" << cantidad << " de tu Tarjeta de Credito.\n";
+        cout << "Pagos a tiempo: " << tarjeta.pagos_a_tiempo << "\n";
+        cout << "Puntos acumulados: " << tarjeta.puntos << "\n";
     } else {
         cout << "Saldo Insuficiente.\n";
     }
 }
+
+//Consultar Puntos Acumulados X Cada Pago realizado en la Tarjeta de Credito
+void consultarPuntosTarjeta() {
+    cout << "Puntos acumulados en la tarjeta: " << tarjeta.puntos << "\n";
+    cout << "Pagos a tiempo realizados: " << tarjeta.pagos_a_tiempo << "\n";
+}
+
 
 void mostrarMenu() {
     cout << "\n--- Menu de Banka Smart Aplication ---\n";
@@ -109,7 +120,8 @@ void mostrarMenu() {
     cout << "9. Transferir dinero a otro banco\n";
     cout << "10. Pagar servicios basicos\n";
     cout << "11. Pagar tarjeta de crédito\n";
-    cout << "12. Salir\n";
+    cout << "12. Consultar puntos de la tarjeta de crédito\n";
+    cout << "13. Salir\n";
     cout << "Elige una opcion: ";
 }
 
@@ -193,13 +205,16 @@ int main() {
                 cin >> cantidad;
                 pagarTarjetaCredito(saldoCuenta1, cantidad);
                 break;
-            case 12:
+           case 12:
+                consultarPuntosTarjeta();
+                break;
+            case 13:
                 cout << "Saliendo...\n";
                 break;
             default:
                 cout << "Opcion invalida. Intenta de nuevo.\n";
         }
-    } while (opcion != 12);
+    } while (opcion != 13);
 
     return 0;
 }
