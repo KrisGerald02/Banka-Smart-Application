@@ -6,10 +6,6 @@ double saldoCuenta1 = 0.0;
 double saldoCuenta2 = 0.0;
 double deudaTarjetaCredito = 0.0;
 
-//Mejorar Rotulos en todo el cod
-//Referencias: Facturas
-
-
 void depositar(double &saldo, double cantidad) {
     if (cantidad > 0) {
         saldo += cantidad;
@@ -42,6 +38,18 @@ void transferir(double &saldoOrigen, double &saldoDestino, double cantidad) {
     }
 }
 
+void transferirOtroBanco(double &saldoOrigen, double cantidad) {
+    double comision = 0.10 * cantidad;
+    double total = cantidad + comision;
+    if (total > 0 && total <= saldoOrigen) {
+        saldoOrigen -= total;
+        cout << "Has transferido $" << cantidad << " a otro banco con una comisión de $" << comision << ".\n";
+        cout << "Total deducido de tu cuenta: $" << total << ".\n";
+    } else {
+        cout << "Saldo Insuficiente en la Cuenta Origen.\n";
+    }
+}
+
 void pagarServicio(double &saldo, const string &servicio, double cantidad) {
     if (cantidad > 0 && cantidad <= saldo) {
         saldo -= cantidad;
@@ -61,7 +69,6 @@ void pagarTarjetaCredito(double &saldo, double cantidad) {
     }
 }
 
-//Falta la Opcion de Crear o Solicitar Tarjeta de Credito
 void mostrarMenu() {
     cout << "\n--- Menu de Banka Smart Aplication ---\n";
     cout << "1. Depositar dinero en Cuenta 1\n";
@@ -71,9 +78,10 @@ void mostrarMenu() {
     cout << "5. Retirar dinero de Cuenta 2\n";
     cout << "6. Consultar saldo de Cuenta 2\n";
     cout << "7. Transferir dinero entre cuentas\n";
-    cout << "8. Pagar servicios basicos\n";
-    cout << "9. Pagar tarjeta de credito\n";
-    cout << "10. Salir\n";
+    cout << "8. Transferir dinero a otro banco\n";
+    cout << "9. Pagar servicios basicos\n";
+    cout << "10. Pagar tarjeta de credito\n";
+    cout << "11. Salir\n";
     cout << "Elige una opcion: ";
 }
 
@@ -88,9 +96,7 @@ void mostrarMenuServicios() {
 int main() {
     int opcion, opcionServicio;
     double cantidad;
-    //Falta la Opcion de:
-    //La transferencia entre cuentas entre el mismo usuario y cuentas internacionales y de otros bancos
-    //Lo anterior se requiere de condiciones como: Entre Bancos ( generar comision del 2 o 3% del total de la transferencia)
+
     do {
         mostrarMenu();
         cin >> opcion;
@@ -128,6 +134,11 @@ int main() {
                 transferir(saldoCuenta1, saldoCuenta2, cantidad);
                 break;
             case 8:
+                cout << "Introduce la cantidad a transferir a otro banco: ";
+                cin >> cantidad;
+                transferirOtroBanco(saldoCuenta1, cantidad);
+                break;
+            case 9:
                 mostrarMenuServicios();
                 cin >> opcionServicio;
                 cout << "Introduce la cantidad a pagar: ";
@@ -146,18 +157,18 @@ int main() {
                         cout << "Opcion de servicio invalida.\n";
                 }
                 break;
-            case 9:
+            case 10:
                 cout << "Introduce la cantidad a pagar en tu tarjeta de credito: ";
                 cin >> cantidad;
                 pagarTarjetaCredito(saldoCuenta1, cantidad);
                 break;
-            case 10:
+            case 11:
                 cout << "Saliendo...\n";
                 break;
             default:
                 cout << "Opcion invalida. Intenta de nuevo.\n";
         }
-    } while (opcion != 10);
+    } while (opcion != 11);
 
     return 0;
 }
