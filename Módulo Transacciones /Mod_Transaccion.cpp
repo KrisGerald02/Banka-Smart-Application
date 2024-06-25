@@ -1,10 +1,37 @@
 #include <iostream>
+#include <string>
 
 using namespace std;
 
 double saldoCuenta1 = 0.0;
 double saldoCuenta2 = 0.0;
 double deudaTarjetaCredito = 0.0;
+
+struct TarjetaDeCredito {
+    string numero;
+    string titular;
+    double limite_credito;
+    double saldo;
+    int pagos_a_tiempo;
+    int puntos;
+};
+
+TarjetaDeCredito tarjeta;
+
+// Función para crear una tarjeta de crédito
+void crearTarjetaDeCredito(TarjetaDeCredito &tarjeta) {
+    cout << "Ingrese el número de la tarjeta: ";
+    cin >> tarjeta.numero;
+    cout << "Ingrese el titular de la tarjeta: ";
+    cin.ignore(); // Para ignorar el salto de línea previo
+    getline(cin, tarjeta.titular);
+    cout << "Ingrese el límite de crédito: ";
+    cin >> tarjeta.limite_credito;
+    tarjeta.saldo = 0;
+    tarjeta.pagos_a_tiempo = 0;
+    tarjeta.puntos = 0;
+    cout << "Tarjeta de crédito creada exitosamente.\n";
+}
 
 void depositar(double &saldo, double cantidad) {
     if (cantidad > 0) {
@@ -71,17 +98,18 @@ void pagarTarjetaCredito(double &saldo, double cantidad) {
 
 void mostrarMenu() {
     cout << "\n--- Menu de Banka Smart Aplication ---\n";
-    cout << "1. Depositar dinero en Cuenta 1\n";
-    cout << "2. Retirar dinero de Cuenta 1\n";
-    cout << "3. Consultar saldo de Cuenta 1\n";
-    cout << "4. Depositar dinero en Cuenta 2\n";
-    cout << "5. Retirar dinero de Cuenta 2\n";
-    cout << "6. Consultar saldo de Cuenta 2\n";
-    cout << "7. Transferir dinero entre cuentas\n";
-    cout << "8. Transferir dinero a otro banco\n";
-    cout << "9. Pagar servicios basicos\n";
-    cout << "10. Pagar tarjeta de credito\n";
-    cout << "11. Salir\n";
+    cout << "1. Crear tarjeta de crédito\n";
+    cout << "2. Depositar dinero en Cuenta 1\n";
+    cout << "3. Retirar dinero de Cuenta 1\n";
+    cout << "4. Consultar saldo de Cuenta 1\n";
+    cout << "5. Depositar dinero en Cuenta 2\n";
+    cout << "6. Retirar dinero de Cuenta 2\n";
+    cout << "7. Consultar saldo de Cuenta 2\n";
+    cout << "8. Transferir dinero entre cuentas\n";
+    cout << "9. Transferir dinero a otro banco\n";
+    cout << "10. Pagar servicios basicos\n";
+    cout << "11. Pagar tarjeta de crédito\n";
+    cout << "12. Salir\n";
     cout << "Elige una opcion: ";
 }
 
@@ -103,42 +131,45 @@ int main() {
 
         switch (opcion) {
             case 1:
+                crearTarjetaDeCredito(tarjeta);
+                break;
+            case 2:
                 cout << "Introduce la cantidad a depositar en Cuenta 1: ";
                 cin >> cantidad;
                 depositar(saldoCuenta1, cantidad);
                 break;
-            case 2:
+            case 3:
                 cout << "Introduce la cantidad a retirar de Cuenta 1: ";
                 cin >> cantidad;
                 retirar(saldoCuenta1, cantidad);
                 break;
-            case 3:
+            case 4:
                 consultarSaldo(saldoCuenta1, 1);
                 break;
-            case 4:
+            case 5:
                 cout << "Introduce la cantidad a depositar en Cuenta 2: ";
                 cin >> cantidad;
                 depositar(saldoCuenta2, cantidad);
                 break;
-            case 5:
+            case 6:
                 cout << "Introduce la cantidad a retirar de Cuenta 2: ";
                 cin >> cantidad;
                 retirar(saldoCuenta2, cantidad);
                 break;
-            case 6:
+            case 7:
                 consultarSaldo(saldoCuenta2, 2);
                 break;
-            case 7:
+            case 8:
                 cout << "Introduce la cantidad a transferir de Cuenta 1 a Cuenta 2: ";
                 cin >> cantidad;
                 transferir(saldoCuenta1, saldoCuenta2, cantidad);
                 break;
-            case 8:
+            case 9:
                 cout << "Introduce la cantidad a transferir a otro banco: ";
                 cin >> cantidad;
                 transferirOtroBanco(saldoCuenta1, cantidad);
                 break;
-            case 9:
+            case 10:
                 mostrarMenuServicios();
                 cin >> opcionServicio;
                 cout << "Introduce la cantidad a pagar: ";
@@ -157,18 +188,18 @@ int main() {
                         cout << "Opcion de servicio invalida.\n";
                 }
                 break;
-            case 10:
+            case 11:
                 cout << "Introduce la cantidad a pagar en tu tarjeta de credito: ";
                 cin >> cantidad;
                 pagarTarjetaCredito(saldoCuenta1, cantidad);
                 break;
-            case 11:
+            case 12:
                 cout << "Saliendo...\n";
                 break;
             default:
                 cout << "Opcion invalida. Intenta de nuevo.\n";
         }
-    } while (opcion != 11);
+    } while (opcion != 12);
 
     return 0;
 }
