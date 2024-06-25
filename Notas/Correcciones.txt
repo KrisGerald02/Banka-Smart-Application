@@ -10,7 +10,7 @@ Modulo Prestamos:
   -Saldo Crediticio (listo solo falta añadir la condicion / requisito para solicitud de prestamo a este mismo modulo)
 
 Modulo Transacciones: 
-  -Falta la Opcion de Crear o Solicitar Tarjeta de Credito (listo solo moverla del mod tarjeta de credito
+  -100%
 
 Modulo Informe: 
   -TODO 
