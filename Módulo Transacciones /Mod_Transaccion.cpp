@@ -106,7 +106,13 @@ void consultarPuntosTarjeta() {
     cout << "Pagos a tiempo realizados: " << tarjeta.pagos_a_tiempo << "\n";
 }
 
-
+//Mejorar Menu 
+//1. Transaccion
+// 1.1 Retiro
+// 1.2 Transfernecias
+///  1.2.1 Transferencias entre cuentas del mismo usuario
+///  1.2.2 Transferencias a otras cuentas
+///  1.2.3 Transferencias a Otros Bancos
 void mostrarMenu() {
     cout << "\n--- Menu de Banka Smart Aplication ---\n";
     cout << "1. Crear tarjeta de crédito\n";
