@@ -19,6 +19,39 @@ Poner en modulo de transaccion opcion perdida de tarjeta de debito o credito
 
 csv extension
 fstream
+std::cout << " - (x" << productos_facturados[i].unidades_compradas << ") - $" << (productos_facturados[i].precio * productos_facturados[i].unidades_compradas) << std::endl;
+        }
+        total += (productos_facturados[i].precio * productos_facturados[i].unidades_compradas);
+    }
+    std::cout << "============================================" << std::endl;
+    std::cout << "Total a pagar: $" << total << std::endl;
+    system("pause");
+
+    exportarFacturaCSV(productos_facturados, productos_cant, factura_nombre, total);
+    delete[] productos_facturados; // Don't forget to free the dynamically allocated memory
+}
+
+void facturarMain(InventoryItems arr[], int inv_cant) {
+    int opcion;
+
+    do {
+        mostrarMenu();
+        std::cout << "Ingrese una opcion: ";
+        std::cin >> opcion;
+
+        switch (opcion) {
+            case 1:
+                facturar(arr, inv_cant);
+                break;
+            case 2:
+                std::cout << "Saliendo del programa..." << std::endl;
+                return;
+            default:
+                std::cout << "Opcion invalida. Intente nuevamente." << std::endl;
+                break;
+        }
+    } while (opcion != 2);
+}
 
 
 
