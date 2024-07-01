@@ -4,7 +4,7 @@ General:
   -Determinar si se usara cordobas o dolares {depende de la opcion convertir de uno a otro}
   -Modulo Transacciones: Completado 100%
   -Modulo Prestamos: Completado 100% TXT
-  -Modulo Cuentas: ?
+  -Modulo Cuentas: Completado 100% TXT
   -Modulo Informe: Prestamos 95%
 
 Modulo Seguridad:
