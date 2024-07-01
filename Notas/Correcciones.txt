@@ -5,7 +5,7 @@ General:
   -Modulo Transacciones: Completado 100%
   -Modulo Prestamos: Completado 100% TXT
   -Modulo Cuentas: ?
-  -Modulo Informe: FALTA TODO
+  -Modulo Informe: Prestamos 95%
 
 Modulo Seguridad:
   Empleado : "BAC123". 
