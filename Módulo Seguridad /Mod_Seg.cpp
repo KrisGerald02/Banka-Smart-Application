@@ -34,7 +34,6 @@ int main() {
     return 0;
 }
 
-//Para este modulo añadir una funcion que censure con ("*") los numeros de cuenta del usuario
 //Generar contraseñas con digitos especificos al inicio para reconocer el tipo de usuario (cliente o empleado)
 //Ej: Cliente : "CL123", Empleado : "BAC123".
 //Idea: Para la Contraseña del Cliente y Empleado agarrar los primeros 3 caracteres de su numbre y cumpleaños
