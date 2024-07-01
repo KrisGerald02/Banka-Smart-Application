@@ -32,8 +32,76 @@ string generar_numero_cuenta() {
     return numero_cuenta;
 }
 
-void update() {
-    // Placeholder function for updating account details
+void actualizar_cuenta(const char* nombre_archivo) {
+    char numero_cuenta[13], numero_cuenta1[13];
+    char nombre[50], nombre1[50];
+    char email[50], email1[50];
+    char direccion[100], direccion1[100];
+    char numero[9], numero1[9];
+    float saldo_inicial, saldo_inicial1;
+    int d_nacimiento, d_nacimiento1;
+    int m_nacimiento, m_nacimiento1;
+    int a_nacimiento, a_nacimiento1;
+
+    FILE *ptrF = fopen(nombre_archivo, "r");
+    FILE *ptrF1 = fopen("temporal.txt", "w");
+
+    cout << "\nIntroduzca el numero de cuenta que desea actualizar: ";
+    cin >> numero_cuenta1;
+
+    while (fscanf(ptrF, "%s %s %s %s %s %f %d %d %d", numero_cuenta, nombre, email, direccion, numero, &saldo_inicial, &d_nacimiento, &m_nacimiento, &a_nacimiento) != EOF) {
+        if (strcmp(numero_cuenta, numero_cuenta1) == 0) {
+            int opcion;
+            cout << "\n¿Qué desea actualizar?: ";
+            cout << "\n1. Nombre";
+            cout << "\n2. Correo electronico";
+            cout << "\n3. Direccion";
+            cout << "\n4. Numero de telefono";
+            cout << "\n5. Saldo inicial";
+            cout << "\n0. Salir";
+            cout << "\nSeleccione una opción: ";
+            cin >> opcion;
+
+            switch (opcion) {
+                case 1:
+                    cout << "\nIntroduzca el nuevo nombre: ";
+                    cin.ignore();
+                    cin.getline(nombre1, 50);
+                    strcpy(nombre, nombre1);
+                    break;
+                case 2:
+                    cout << "\nIntroduzca el nuevo correo electronico: ";
+                    cin >> email1;
+                    strcpy(email, email1);
+                    break;
+                case 3:
+                    cout << "\nIntroduzca la nueva direccion: ";
+                    cin.ignore();
+                    cin.getline(direccion1, 100);
+                    strcpy(direccion, direccion1);
+                    break;
+                case 4:
+                    cout << "\nIntroduzca el nuevo numero de telefono: ";
+                    cin >> numero1;
+                    strcpy(numero, numero1);
+                    break;
+                case 5:
+                    cout << "\nIntroduzca el nuevo saldo inicial: ";
+                    cin >> saldo_inicial1;
+                    saldo_inicial = saldo_inicial1;
+                    break;
+                default:
+                    break;
+            }
+            fprintf(ptrF1, "%s %s %s %s %s %.2f %d %d %d\n", numero_cuenta, nombre, email, direccion, numero, saldo_inicial, d_nacimiento, m_nacimiento, a_nacimiento);
+        } else {
+            fprintf(ptrF1, "%s %s %s %s %s %.2f %d %d %d\n", numero_cuenta, nombre, email, direccion, numero, saldo_inicial, d_nacimiento, m_nacimiento, a_nacimiento);
+        }
+    }
+    fclose(ptrF);
+    fclose(ptrF1);
+    remove(nombre_archivo);
+    rename("temporal.txt", nombre_archivo);
 }
 
 void log_in();
@@ -73,16 +141,19 @@ void log_in() {
             do {
                 cout << "Cuenta chiqui" << endl;
                 cout << "1. Editar cuenta" << endl;
+                cout << "2. Salir" << endl;
                 cin >> opcion;
 
                 switch (opcion) {
                     case 1:
-                        update();
+                        actualizar_cuenta("cuenta_chiqui");
+                        break;
+                    case 2:
                         break;
                     default:
                         break;
                 }
-            } while (opcion != 1);
+            } while (opcion != 2);
         } else {
             cout << "Correo electronico incorrecto" << endl;
         }
@@ -175,7 +246,7 @@ void cuenta_ahorro() {
         if((ptrF = fopen("cuenta_ahorro", "w")) == NULL) {
             cout << "Error al abrir el archivo" << endl;
         } else {
-            cout << "Sus datos han sido guardados exitosamente" << endl; // Corregida aquí
+            cout << "Sus datos han sido guardados exitosamente" << endl;
             fprintf(ptrF, "Numero de cuenta: %s\n", numero_cuenta.c_str());
             fprintf(ptrF, "Correo: %s\n", cc.email.c_str());
             fprintf(ptrF, "Nombre: %s\n", cc.nombre.c_str());
@@ -192,11 +263,9 @@ void cuenta_ahorro() {
 void cuenta_chiqui() {
     int d_nacimiento, m_nacimiento, a_nacimiento;
     bool v_nombre = false, v_email = false, v_numero = false, v_fnacimiento = false;
-    int mes_a[7] = {1, 3, 5, 7, 8, 10, 12};
-    int mes_b[5] = {4, 6, 9, 11};
 
     cout << "Ingrese su nombre completo --> ";
-    cin.ignore();  
+    cin.ignore();
     getline(cin, cc.nombre);
     cout << endl;
 
@@ -219,7 +288,7 @@ void cuenta_chiqui() {
     }
 
     cout << "Ingrese su direccion --> ";
-    cin.ignore();  
+    cin.ignore();
     getline(cin, cc.direccion);
     cout << endl;
 
@@ -234,51 +303,25 @@ void cuenta_chiqui() {
         cout << "Numero de telefono invalido" << endl;
     }
 
-    cout << "Ingrese su fecha de nacimiento" << endl;
-    cout << "Dia --> ";
-    cin >> d_nacimiento;
-    cout << "Mes --> ";
-    cin >> m_nacimiento;
-    cout << "Año --> ";
-    cin >> a_nacimiento;
-
-    bool fecha_valida = false;
-    for(int i = 0; i < 7; i++) {
-        if(mes_a[i] == m_nacimiento && d_nacimiento > 0 && d_nacimiento <= 31) {
-            fecha_valida = true;
-            break;
-        }
-    }
-
-    if(!fecha_valida) {
-        for(int i = 0; i < 5; i++) {
-            if(mes_b[i] == m_nacimiento && d_nacimiento > 0 && d_nacimiento <= 30) {
-                fecha_valida = true;
-                break;
-            }
-        }
-    }
-
-    if(m_nacimiento == 2 && d_nacimiento > 0 && d_nacimiento <= 28) {
-        fecha_valida = true;
-    }
-
-    if(!fecha_valida) {
-        cout << "Fecha de nacimiento invalida" << endl;
-    } else {
+    cout << "Ingrese su fecha de nacimiento (dd mm yyyy) --> ";
+    cin >> d_nacimiento >> m_nacimiento >> a_nacimiento;
+    if((d_nacimiento >= 1 && d_nacimiento <= 31) && (m_nacimiento >= 1 && m_nacimiento <= 12) && (a_nacimiento >= 1900 && a_nacimiento <= 2100)) {
         v_fnacimiento = true;
+        cout << "Fecha de nacimiento valida" << endl;
+    } else {
+        cout << "Fecha de nacimiento invalida" << endl;
     }
 
     if(v_nombre && v_email && v_numero && v_fnacimiento) {
-        cout << "La cuenta ha sido creada con exito" << endl;
+        cout << "La cuenta chiqui ha sido creada con exito" << endl;
 
         string numero_cuenta = generar_numero_cuenta();
         cout << "Su numero de cuenta es: " << numero_cuenta << endl;
 
-        if((ptrF = fopen("cuenta_chiqui","w"))== NULL) {
+        if((ptrF = fopen("cuenta_chiqui", "w")) == NULL) {
             cout << "Error al abrir el archivo" << endl;
         } else {
-            cout << "Sus datos han sido guardados exitosamente" << endl; // Corregida aquí
+            cout << "Sus datos han sido guardados exitosamente" << endl;
             fprintf(ptrF, "Numero de cuenta: %s\n", numero_cuenta.c_str());
             fprintf(ptrF, "Correo: %s\n", cc.email.c_str());
             fprintf(ptrF, "Nombre: %s\n", cc.nombre.c_str());
@@ -369,7 +412,7 @@ void cuenta_universitaria() {
         if((ptrF = fopen("cuenta_universitaria", "w")) == NULL) {
             cout << "Error al abrir el archivo" << endl;
         } else {
-            cout << "Sus datos han sido guardados exitosamente" << endl; // Corregida aquí
+            cout << "Sus datos han sido guardados exitosamente" << endl;
             fprintf(ptrF, "Numero de cuenta: %s\n", numero_cuenta.c_str());
             fprintf(ptrF, "Correo: %s\n", cc.email.c_str());
             fprintf(ptrF, "Nombre: %s\n", cc.nombre.c_str());
@@ -393,8 +436,9 @@ int main() {
         cout << "Elige una opcion" << endl;
         cout << "1) Crear cuenta de ahorro" << endl;
         cout << "2) Crear una cuenta chiqui" << endl;
-        cout << "3) Crear una cuenta universitaria" << endl; 
-        cout << "4) Salir" << endl;
+        cout << "3) Crear una cuenta universitaria" << endl;
+        cout << "4) Modificar cuenta existente" << endl;
+        cout << "5) Salir" << endl;
         cin >> opcion;
 
         switch(opcion) {
@@ -408,14 +452,36 @@ int main() {
                 cuenta_universitaria();
                 break;
             case 4:
+                int sub_opcion;
+                cout << "Seleccione el tipo de cuenta a modificar:" << endl;
+                cout << "1) Cuenta de ahorro" << endl;
+                cout << "2) Cuenta chiqui" << endl;
+                cout << "3) Cuenta universitaria" << endl;
+                cin >> sub_opcion;
+                
+                switch (sub_opcion) {
+                    case 1:
+                        actualizar_cuenta("cuenta_ahorro");
+                        break;
+                    case 2:
+                        actualizar_cuenta("cuenta_chiqui");
+                        break;
+                    case 3:
+                        actualizar_cuenta("cuenta_universitaria");
+                        break;
+                    default:
+                        cout << "Opcion no valida" << endl;
+                        break;
+                }
+                break;
+            case 5:
                 cout << "Saliendo..." << endl;
                 break;
             default:
                 cout << "Elige una opción valida" << endl;
                 break;
         }
-    } while (opcion != 4);
+    } while (opcion != 5);
 
     return 0;
 }
-
