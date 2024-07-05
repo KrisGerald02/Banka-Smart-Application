@@ -1,7 +1,7 @@
 #include <iostream>
-#include <cmath> // Para pow
-#include <cstdio> // Para FILE y funciones relacionadas
-#include <cstdlib> // Para NULL
+#include <math.h> // Para pow
+#include <stdio.h> // Para FILE y funciones relacionadas
+#include <stdlib.h> // Para NULL
 
 using namespace std;
 
@@ -29,6 +29,12 @@ void escribirResumen(double saldoInicial, double montoPago, double saldoActualiz
     fprintf(archivo, "%-15s%-15s%-20s\n", "Saldo Inicial", "Monto del Pago", "Saldo Actualizado");
     fprintf(archivo, "%-15.2f%-15.2f%-20.2f\n", saldoInicial, montoPago, saldoActualizado);
     fclose(archivo);
+
+    // También mostrar en la terminal
+    cout << "\n--- Resumen del Prestamo ---\n";
+    cout << "Saldo Inicial: " << saldoInicial << "\n";
+    cout << "Monto del Pago: " << montoPago << "\n";
+    cout << "Saldo Actualizado: " << saldoActualizado << "\n";
 }
 
 double calcularPagoMensual(double montoPrestamo, double tasaInteresAnual, int plazoMeses) {
@@ -164,4 +170,3 @@ int main() {
 
     return 0;
 }
-
