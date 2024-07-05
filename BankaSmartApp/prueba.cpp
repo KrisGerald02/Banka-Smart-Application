@@ -1,468 +1,454 @@
 #include <iostream>
+#include <fstream>
+#include <string>
 #include <iomanip>
-#include <cstdio>
-#include <cstring>
-#include <regex>
 #include <cmath>
-#include "contenedor_cuenta.h"
-#include "contenedor_prestamo.h"
-#include "contenedor_transacciones.h"
 
 using namespace std;
 
-// Estructura para manejar datos de préstamo
-struct Prestamo {
-    double saldoPrestamo;
-    double tasaInteresAnual;
-    int plazoMeses;
-    double saldoInicial;
+// Estructura para el manejo de usuarios
+struct Usuario {
+    string nombre;
+    string password;
 };
 
-//INICIO CUENTA
-FILE *ptrF;
-Cuenta cuenta;
+// Estructura para el manejo de tarjetas de crédito
+struct TarjetaCredito {
+    string numero;
+    string titular;
+    double limite_credito;
+    double saldo;
+    int pagos_a_tiempo;
+    int puntos;
+};
 
-// Función para generar una contraseña basada en el nombre y día de nacimiento
-void generar_contraseña(const char* nombre, int dia_nacimiento, char* contrasena) {
-    strncpy(contrasena, nombre, 3);
-    char dia[3];
-    sprintf(dia, "%02d", dia_nacimiento);
-    strcat(contrasena, dia);
-}
+// Variables globales
+double saldoCuenta1 = 0.0;
+double saldoCuenta2 = 0.0;
+double saldoPrestamo = 0.0;
+double saldoInicial = 0.0;
+double tasaInteresAnual = 0.05;
+int plazoMeses = 0;
+TarjetaCredito tarjeta;
 
-void limpiarPantalla() {
-    system("cls");  // Cambia esto a "clear" si estás en un sistema Unix/Linux
-}
-
-// Validación de correo electrónico usando regex
-bool validacion_email(const char* email) {
-    const regex patron_email(R"((\w+)(\.\w+)*@(\w+)(\.\w+)+)");
-    return regex_match(email, patron_email);
-}
-
-// Validación de número de teléfono usando regex
-bool validacion_numero(const char* numero) {
-    const regex patron_telefono(R"(\d{8}$)");
-    return regex_match(numero, patron_telefono);
-}
-
-// Validación de nombre usando regex
-bool validacion_nombre(const char* nombre) {
-    const regex patron_nombre(R"(^[A-Z][a-z]*(\s[A-Z][a-z]*)*$)");
-    return regex_match(nombre, patron_nombre);
-}
-
-// Función para generar un número de cuenta de 12 dígitos aleatorio
-void generar_numero_cuenta(char* numero_cuenta) {
-    for (int i = 0; i < 12; ++i) {
-        numero_cuenta[i] = '0' + rand() % 10;
+// Función para escribir en el archivo de registro
+void escribirEnArchivo(const string &mensaje) {
+    ofstream archivo("registro.txt", ios::app);
+    if (archivo.is_open()) {
+        archivo << mensaje << endl;
+        archivo.close();
+    } else {
+        cout << "No se pudo abrir el archivo de registro.\n";
     }
-    numero_cuenta[12] = '\0';
 }
 
-// Función para actualizar los datos de una cuenta
-void actualizar_cuenta(const char* nombre_archivo) {
-    char numero_cuenta[13], numero_cuenta1[13];
-    char nombre[50], nombre1[50];
-    char email[50], email1[50];
-    char direccion[100], direccion1[100];
-    char numero[9], numero1[9];
-    float saldo_inicial, saldo_inicial1;
-    int d_nacimiento, d_nacimiento1;
-    int m_nacimiento, m_nacimiento1;
-    int a_nacimiento, a_nacimiento1;
+// Menús
+void mostrarMenuPrincipal() {
+    cout << "\nMenu Principal:\n";
+    cout << "1. Transacciones\n";
+    cout << "2. Prestamos\n";
+    cout << "3. Servicios\n";
+    cout << "4. Tarjeta de Credito\n";
+    cout << "5. Salir\n";
+    cout << "Seleccione una opcion: ";
+}
 
-    FILE *ptrF = fopen(nombre_archivo, "r");
-    FILE *ptrF1 = fopen("temporal.txt", "w");
+void mostrarMenuTransacciones() {
+    cout << "\nMenu de Transacciones:\n";
+    cout << "1. Depositar en Cuenta 1\n";
+    cout << "2. Retirar de Cuenta 1\n";
+    cout << "3. Consultar Saldo de Cuenta 1\n";
+    cout << "4. Depositar en Cuenta 2\n";
+    cout << "5. Retirar de Cuenta 2\n";
+    cout << "6. Consultar Saldo de Cuenta 2\n";
+    cout << "7. Transferir de Cuenta 1 a Cuenta 2\n";
+    cout << "8. Transferir a Otro Banco\n";
+    cout << "9. Regresar al Menu Principal\n";
+    cout << "Seleccione una opcion: ";
+}
 
-    printf("\nIntroduzca el numero de cuenta que desea actualizar: ");
-    scanf("%s", numero_cuenta1);
+void mostrarMenuPrestamos() {
+    cout << "\nMenu de Prestamos:\n";
+    cout << "1. Solicitar Prestamo\n";
+    cout << "2. Consultar Saldo de Prestamo\n";
+    cout << "3. Realizar Pago de Prestamo\n";
+    cout << "4. Generar Resumen de Prestamo\n";
+    cout << "5. Regresar al Menu Principal\n";
+    cout << "Seleccione una opcion: ";
+}
 
-    while (fscanf(ptrF, "%s %s %s %s %s %f %d %d %d", numero_cuenta, nombre, email, direccion, numero, &saldo_inicial, &d_nacimiento, &m_nacimiento, &a_nacimiento) != EOF) {
-        if (strcmp(numero_cuenta, numero_cuenta1) == 0) {
-            int opcion;
-            do {
-                printf("\n¿Que desea actualizar?: ");
-                printf("\n1. Nombre");
-                printf("\n2. Correo electronico");
-                printf("\n3. Direccion");
-                printf("\n4. Numero de telefono");
-                printf("\n5. Saldo inicial");
-                printf("\n0. Salir");
-                printf("\nSeleccione una opción: ");
-                scanf("%d", &opcion);
+void mostrarMenuServicios() {
+    cout << "\nMenu de Servicios:\n";
+    cout << "1. Pagar Servicio de Luz\n";
+    cout << "2. Pagar Servicio de Agua\n";
+    cout << "3. Pagar Servicio de Internet\n";
+    cout << "4. Regresar al Menu Principal\n";
+    cout << "Seleccione una opcion: ";
+}
 
-                switch (opcion) {
-                    case 1:
-                        printf("\nIntroduzca el nuevo nombre: ");
-                        scanf(" %[^\n]", nombre1);
-                        strcpy(nombre, nombre1);
-                        limpiarPantalla();
-                        break;
-                    case 2:
-                        printf("\nIntroduzca el nuevo correo electronico: ");
-                        scanf("%s", email1);
-                        strcpy(email, email1);
-                        limpiarPantalla();
-                        break;
-                    case 3:
-                        printf("\nIntroduzca la nueva direccion: ");
-                        scanf(" %[^\n]", direccion1);
-                        strcpy(direccion, direccion1);
-                        limpiarPantalla();
-                        break;
-                    case 4:
-                        printf("\nIntroduzca el nuevo numero de telefono: ");
-                        scanf("%s", numero1);
-                        strcpy(numero, numero1);
-                        limpiarPantalla();
-                        break;
-                    case 5:
-                        printf("\nIntroduzca el nuevo saldo inicial: ");
-                        scanf("%f", &saldo_inicial1);
-                        saldo_inicial = saldo_inicial1;
-                        limpiarPantalla();
-                        break;
-                    case 0:
-                        break;
-                    default:
-                        printf("Opción invalida. Por favor intente nuevamente.\n");
-                        limpiarPantalla();
-                }
-            } while (opcion != 0);
-            fprintf(ptrF1, "%s %s %s %s %s %.2f %d %d %d\n", numero_cuenta, nombre, email, direccion, numero, saldo_inicial, d_nacimiento, m_nacimiento, a_nacimiento);
-        } else {
-            fprintf(ptrF1, "%s %s %s %s %s %.2f %d %d %d\n", numero_cuenta, nombre, email, direccion, numero, saldo_inicial, d_nacimiento, m_nacimiento, a_nacimiento);
+void mostrarMenuTarjetaCredito() {
+    cout << "\nMenu de Tarjeta de Credito:\n";
+    cout << "1. Crear Tarjeta de Credito\n";
+    cout << "2. Pagar Tarjeta de Credito\n";
+    cout << "3. Consultar Saldo de Tarjeta de Credito\n";
+    cout << "4. Regresar al Menu Principal\n";
+    cout << "Seleccione una opcion: ";
+}
+
+// Funciones de transacciones
+void depositar(double &saldo, double cantidad) {
+    saldo += cantidad;
+    cout << "Deposito realizado con exito.\n";
+    escribirEnArchivo("Deposito en cuenta. Monto: $" + to_string(cantidad) + ", Nuevo saldo: $" + to_string(saldo));
+}
+
+void retirar(double &saldo, double cantidad) {
+    if (cantidad <= saldo) {
+        saldo -= cantidad;
+        cout << "Retiro realizado con exito.\n";
+        escribirEnArchivo("Retiro de cuenta. Monto: $" + to_string(cantidad) + ", Nuevo saldo: $" + to_string(saldo));
+    } else {
+        cout << "Saldo Insuficiente.\n";
+        escribirEnArchivo("Intento de retiro fallido. Monto: $" + to_string(cantidad) + ", Saldo en cuenta: $" + to_string(saldo));
+    }
+}
+
+void consultarSaldo(double saldo, int cuenta) {
+    cout << "Saldo de la Cuenta " << cuenta << ": $" << saldo << ".\n";
+    escribirEnArchivo("Consulta de saldo en Cuenta " + to_string(cuenta) + ". Saldo: $" + to_string(saldo));
+}
+
+void transferir(double &saldoDesde, double &saldoHacia, double cantidad) {
+    if (cantidad <= saldoDesde) {
+        saldoDesde -= cantidad;
+        saldoHacia += cantidad;
+        cout << "Transferencia realizada con exito.\n";
+        escribirEnArchivo("Transferencia entre cuentas. Monto: $" + to_string(cantidad) + ", Saldo cuenta origen: $" + to_string(saldoDesde) + ", Saldo cuenta destino: $" + to_string(saldoHacia));
+    } else {
+        cout << "Saldo Insuficiente en la cuenta de origen.\n";
+        escribirEnArchivo("Intento de transferencia fallido. Monto: $" + to_string(cantidad) + ", Saldo cuenta origen: $" + to_string(saldoDesde));
+    }
+}
+
+void transferirOtroBanco(double &saldo, double cantidad) {
+    if (cantidad <= saldo) {
+        saldo -= cantidad;
+        cout << "Transferencia a otro banco realizada con exito.\n";
+        escribirEnArchivo("Transferencia a otro banco. Monto: $" + to_string(cantidad) + ", Nuevo saldo: $" + to_string(saldo));
+    } else {
+        cout << "Saldo Insuficiente.\n";
+        escribirEnArchivo("Intento de transferencia a otro banco fallido. Monto: $" + to_string(cantidad) + ", Saldo en cuenta: $" + to_string(saldo));
+    }
+}
+
+// Funciones de servicios
+void pagarServicio(double &saldo, const string &servicio, double cantidad) {
+    if (cantidad <= saldo) {
+        saldo -= cantidad;
+        cout << "Pago del servicio de " << servicio << " realizado con exito.\n";
+        escribirEnArchivo("Pago de servicio. Servicio: " + servicio + ", Monto: $" + to_string(cantidad) + ", Nuevo saldo: $" + to_string(saldo));
+    } else {
+        cout << "Saldo Insuficiente.\n";
+        escribirEnArchivo("Intento de pago de servicio fallido. Servicio: " + servicio + ", Monto: $" + to_string(cantidad) + ", Saldo en cuenta: $" + to_string(saldo));
+    }
+}
+
+// Funciones de tarjeta de crédito
+void pagarTarjetaCredito(double &saldo, double cantidad) {
+    if (cantidad <= saldo) {
+        saldo -= cantidad;
+        tarjeta.saldo -= cantidad;
+        if (tarjeta.saldo <= 0) {
+            tarjeta.pagos_a_tiempo++;
+            tarjeta.puntos += 100;
+            tarjeta.saldo = 0;
         }
-    }
-    fclose(ptrF);
-    fclose(ptrF1);
-    remove(nombre_archivo);
-    rename("temporal.txt", nombre_archivo);
-}
-
-// Función para generar informe de cuenta en forma de tabla
-void generar_informe(const char* nombre_archivo) {
-    FILE *ptrF = fopen(nombre_archivo, "r");
-    if (ptrF == NULL) {
-        printf("Error al abrir el archivo\n");
-        return;
-    }
-
-    char numero_cuenta[13];
-    float saldo_inicial;
-
-    printf("-------------------------------------------------------------\n");
-    printf("%-20s| %-20s| %-20s\n", "Numero de Cuenta", "Saldo Inicial", "Saldo Actual");
-    printf("-------------------------------------------------------------\n");
-    
-    while (fscanf(ptrF, "%s", numero_cuenta) != EOF) {
-        fseek(ptrF, 50 + 50 + 100 + 9, SEEK_CUR); // Avanza el puntero del archivo para saltar los campos no necesarios
-        fscanf(ptrF, "%f", &saldo_inicial);
-        fseek(ptrF, 3 * sizeof(int), SEEK_CUR); // Avanza el puntero del archivo para saltar los campos no necesarios
-
-        float saldo_actual = saldo_inicial; // Aquí puedes añadir cualquier lógica para calcular el saldo actual si es necesario
-        printf("%-20s| %-20.2f| %-20.2f\n", numero_cuenta, saldo_inicial, saldo_actual);
-    }
-
-    printf("-------------------------------------------------------------\n");
-    fclose(ptrF);
-}
-
-// Funciones de manejo de cuenta
-void cuenta_ahorro() {
-    double saldo_inicial;
-    bool v_nombre = false, v_email = false, v_numero = false, v_saldo = false;
-
-    printf("Ingrese su nombre completo --> ");
-    scanf(" %[^\n]", cuenta.nombre);
-
-    if(validacion_nombre(cuenta.nombre)) {
-        v_nombre = true;
-        printf("Nombre valido\n");
+        cout << "Pago de tarjeta de credito realizado con exito.\n";
+        escribirEnArchivo("Pago de tarjeta de credito. Monto: $" + to_string(cantidad) + ", Nuevo saldo en cuenta: $" + to_string(saldo) + ", Saldo de la tarjeta: $" + to_string(tarjeta.saldo));
     } else {
-        printf("Nombre invalido\n");
-    }
-
-    printf("Ingrese su correo electronico --> ");
-    scanf("%s", cuenta.email);
-
-    if(validacion_email(cuenta.email)) {
-        v_email = true;
-        printf("Correo electronico valido\n");
-    } else {
-        printf("Correo electronico invalido\n");
-    }
-
-    printf("Ingrese su direccion --> ");
-    scanf(" %[^\n]", cuenta.direccion);
-
-    printf("Ingrese su numero de telefono --> ");
-    scanf("%s", cuenta.numero);
-
-    if(validacion_numero(cuenta.numero)) {
-        v_numero = true;
-        printf("Numero valido\n");
-    } else {
-        printf("Numero invalido\n");
-    }
-
-    printf("Ingrese su saldo inicial --> ");
-    scanf("%lf", &saldo_inicial);
-
-    if(saldo_inicial >= 0) {
-        v_saldo = true;
-        printf("Saldo inicial valido\n");
-    } else {
-        printf("Saldo inicial invalido\n");
-    }
-
-    printf("Ingrese su fecha de nacimiento (dd mm aaaa) --> ");
-    int d_nacimiento, m_nacimiento, a_nacimiento;
-    scanf("%d %d %d", &d_nacimiento, &m_nacimiento, &a_nacimiento);
-    sprintf(cuenta.f_nacimiento, "%02d/%02d/%04d", d_nacimiento, m_nacimiento, a_nacimiento);
-
-    if (v_nombre && v_email && v_numero && v_saldo) {
-        char numero_cuenta[13];
-        char contrasena[6];
-        generar_numero_cuenta(numero_cuenta);
-        generar_contraseña(cuenta.nombre, d_nacimiento, contrasena);
-
-        printf("Cuenta generada exitosamente!\n");
-        printf("Numero de cuenta: %s\n", numero_cuenta);
-        printf("Contraseña: %s\n", contrasena);
-
-        ptrF = fopen("cuenta_ahorro.txt", "a");
-        if(ptrF == NULL) {
-            printf("Error al abrir el archivo\n");
-        } else {
-            fprintf(ptrF, "%s %s %s %s %s %.2f %d %d %d\n", numero_cuenta, cuenta.nombre, cuenta.email, cuenta.direccion, cuenta.numero, saldo_inicial, d_nacimiento, m_nacimiento, a_nacimiento);
-            fclose(ptrF);
-        }
-    } else {
-        printf("No se pudo crear la cuenta debido a datos invalidos.\n");
+        cout << "Saldo Insuficiente.\n";
+        escribirEnArchivo("Intento de pago de tarjeta de credito fallido. Monto: $" + to_string(cantidad) + ", Saldo en cuenta: $" + to_string(saldo));
     }
 }
 
-//INICIO PRESTAMOS
-void calcularSaldoPrestamo(Prestamo& prestamo) {
-    prestamo.saldoPrestamo = prestamo.saldoInicial;
-    double tasaInteresMensual = prestamo.tasaInteresAnual / 12.0 / 100.0;
-
-    for (int i = 0; i < prestamo.plazoMeses; ++i) {
-        prestamo.saldoPrestamo *= (1 + tasaInteresMensual);
-    }
+void consultarSaldoTarjetaCredito() {
+    cout << "Saldo de la Tarjeta de Credito: $" << tarjeta.saldo << ".\n";
+    cout << "Limite de Credito: $" << tarjeta.limite_credito << ".\n";
+    cout << "Puntos acumulados: " << tarjeta.puntos << ".\n";
+    cout << "Pagos a tiempo: " << tarjeta.pagos_a_tiempo << ".\n";
+    escribirEnArchivo("Consulta de saldo de tarjeta de credito. Saldo: $" + to_string(tarjeta.saldo) + ", Limite de credito: $" + to_string(tarjeta.limite_credito) + ", Puntos: " + to_string(tarjeta.puntos) + ", Pagos a tiempo: " + to_string(tarjeta.pagos_a_tiempo));
 }
 
-void imprimirDetallePrestamo(const Prestamo& prestamo) {
-    cout << fixed << setprecision(2);
-    cout << "Saldo inicial del prestamo: $" << prestamo.saldoInicial << endl;
-    cout << "Tasa de interes anual: " << prestamo.tasaInteresAnual << "%" << endl;
-    cout << "Plazo del prestamo: " << prestamo.plazoMeses << " meses" << endl;
-    cout << "Saldo total del prestamo despues del plazo: $" << prestamo.saldoPrestamo << endl;
-}
-
+// Funciones de prestamos
 void solicitarPrestamo() {
-    Prestamo prestamo;
-    cout << "Ingrese el saldo inicial del prestamo: ";
-    cin >> prestamo.saldoInicial;
-    cout << "Ingrese la tasa de interes anual (en porcentaje): ";
-    cin >> prestamo.tasaInteresAnual;
-    cout << "Ingrese el plazo del prestamo (en meses): ";
-    cin >> prestamo.plazoMeses;
-
-    calcularSaldoPrestamo(prestamo);
-    imprimirDetallePrestamo(prestamo);
-
-    // Guardar los datos del préstamo en un archivo
-    FILE *archivoPrestamos = fopen("prestamos.txt", "a");
-    if (archivoPrestamos == NULL) {
-        cout << "Error al abrir el archivo de prestamos." << endl;
-        return;
-    }
-
-    fprintf(archivoPrestamos, "%.2f %.2f %d %.2f\n", prestamo.saldoInicial, prestamo.tasaInteresAnual, prestamo.plazoMeses, prestamo.saldoPrestamo);
-    fclose(archivoPrestamos);
+    cout << "Ingrese el monto del prestamo que desea solicitar: ";
+    cin >> saldoInicial;
+    cout << "Ingrese el plazo del prestamo en meses: ";
+    cin >> plazoMeses;
+    saldoPrestamo = saldoInicial;
+    cout << "Prestamo solicitado con exito.\n";
+    escribirEnArchivo("Solicitud de prestamo. Monto: $" + to_string(saldoInicial) + ", Plazo: " + to_string(plazoMeses) + " meses.");
 }
 
-void mostrarPrestamos() {
-    FILE *archivoPrestamos = fopen("prestamos.txt", "r");
-    if (archivoPrestamos == NULL) {
-        cout << "No se encontraron datos de prestamos." << endl;
-        return;
-    }
-
-    Prestamo prestamo;
-    cout << "Detalles de los prestamos registrados:" << endl;
-    cout << "--------------------------------------" << endl;
-    while (fscanf(archivoPrestamos, "%lf %lf %d %lf", &prestamo.saldoInicial, &prestamo.tasaInteresAnual, &prestamo.plazoMeses, &prestamo.saldoPrestamo) != EOF) {
-        imprimirDetallePrestamo(prestamo);
-        cout << "--------------------------------------" << endl;
-    }
-    fclose(archivoPrestamos);
+void consultarSaldoPrestamo() {
+    cout << "Saldo actual del prestamo: $" << saldoPrestamo << ".\n";
+    escribirEnArchivo("Consulta de saldo de prestamo. Saldo actual: $" + to_string(saldoPrestamo));
 }
 
-//INICIO TRANSACCIONES
-struct Transaccion {
-    char fecha[11];
-    char descripcion[50];
-    double monto;
-    char tipo; // 'D' para depósito, 'R' para retiro
-};
-
-void registrarTransaccion(const char* cuenta, const char* descripcion, double monto, char tipo) {
-    Transaccion transaccion;
-    time_t t = time(NULL);
-    struct tm tm = *localtime(&t);
-    sprintf(transaccion.fecha, "%02d/%02d/%04d", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900);
-    strncpy(transaccion.descripcion, descripcion, sizeof(transaccion.descripcion) - 1);
-    transaccion.monto = monto;
-    transaccion.tipo = tipo;
-
-    FILE *archivoTransacciones = fopen("transacciones.txt", "a");
-    if (archivoTransacciones == NULL) {
-        printf("Error al abrir el archivo de transacciones.\n");
-        return;
+void realizarPagoPrestamo(double &saldo, double cantidad) {
+    if (cantidad <= saldo) {
+        saldo -= cantidad;
+        saldoPrestamo -= cantidad;
+        cout << "Pago del prestamo realizado con exito.\n";
+        escribirEnArchivo("Pago de prestamo. Monto: $" + to_string(cantidad) + ", Nuevo saldo de prestamo: $" + to_string(saldoPrestamo));
+    } else {
+        cout << "Saldo Insuficiente.\n";
+        escribirEnArchivo("Intento de pago de prestamo fallido. Monto: $" + to_string(cantidad) + ", Saldo en cuenta: $" + to_string(saldo));
     }
-
-    fprintf(archivoTransacciones, "%s %s %.2f %c\n", transaccion.fecha, transaccion.descripcion, transaccion.monto, transaccion.tipo);
-    fclose(archivoTransacciones);
 }
 
-void mostrarTransacciones() {
-    FILE *archivoTransacciones = fopen("transacciones.txt", "r");
-    if (archivoTransacciones == NULL) {
-        printf("No se encontraron transacciones.\n");
-        return;
-    }
+void generarResumenPrestamo() {
+    double tasaInteresMensual = tasaInteresAnual / 12;
+    double saldoPendiente = saldoInicial;
+    double pagoMensual = saldoInicial * (tasaInteresMensual * pow(1 + tasaInteresMensual, plazoMeses)) / (pow(1 + tasaInteresMensual, plazoMeses) - 1);
 
-    Transaccion transaccion;
-    printf("Detalles de las transacciones registradas:\n");
-    printf("------------------------------------------\n");
-    while (fscanf(archivoTransacciones, "%s %s %lf %c", transaccion.fecha, transaccion.descripcion, &transaccion.monto, &transaccion.tipo) != EOF) {
-        printf("Fecha: %s\n", transaccion.fecha);
-        printf("Descripcion: %s\n", transaccion.descripcion);
-        printf("Monto: %.2f\n", transaccion.monto);
-        printf("Tipo: %c\n", transaccion.tipo);
-        printf("------------------------------------------\n");
+    cout << "\nResumen del Prestamo:\n";
+    cout << "Monto inicial del prestamo: $" << saldoInicial << "\n";
+    cout << "Plazo del prestamo: " << plazoMeses << " meses\n";
+    cout << "Pago mensual: $" << fixed << setprecision(2) << pagoMensual << "\n";
+    cout << "Detalle de pagos:\n";
+    cout << "Mes\tPago Mensual\tInteres\tPrincipal\tSaldo Pendiente\n";
+
+    for (int mes = 1; mes <= plazoMeses; ++mes) {
+        double interesMensual = saldoPendiente * tasaInteresMensual;
+        double principalMensual = pagoMensual - interesMensual;
+        saldoPendiente -= principalMensual;
+
+        cout << mes << "\t$" << fixed << setprecision(2) << pagoMensual << "\t$" << interesMensual << "\t$" << principalMensual << "\t$" << saldoPendiente << "\n";
     }
-    fclose(archivoTransacciones);
+    escribirEnArchivo("Generacion de resumen de prestamo. Monto inicial: $" + to_string(saldoInicial) + ", Plazo: " + to_string(plazoMeses) + " meses, Pago mensual: $" + to_string(pagoMensual));
 }
 
-void main_menu() {
-    int opcion;
-    do {
-        cout << "Menu Principal\n";
-        cout << "1. Opciones de Cuenta\n";
-        cout << "2. Opciones de Prestamo\n";
-        cout << "3. Opciones de Transacciones\n";
-        cout << "4. Salir\n";
-        cout << "Seleccione una opcion: ";
-        cin >> opcion;
+// Función de inicio de sesión
+bool iniciarSesion(Usuario usuarios[], int numUsuarios, string &nombre) {
+    string password;
+    cout << "Nombre de usuario: ";
+    cin >> nombre;
+    cout << "Contrasena: ";
+    cin >> password;
 
-        switch (opcion) {
-            case 1: {
-                int opcion_cuenta;
-                do {
-                    cout << "\nOpciones de Cuenta\n";
-                    cout << "1. Crear cuenta de ahorro\n";
-                    cout << "2. Actualizar cuenta\n";
-                    cout << "3. Generar informe de cuenta\n";
-                    cout << "0. Volver al menu principal\n";
-                    cout << "Seleccione una opcion: ";
-                    cin >> opcion_cuenta;
-
-                    switch (opcion_cuenta) {
-                        case 1:
-                            cuenta_ahorro();
-                            break;
-                        case 2:
-                            actualizar_cuenta("cuenta_ahorro.txt");
-                            break;
-                        case 3:
-                            generar_informe("cuenta_ahorro.txt");
-                            break;
-                        case 0:
-                            break;
-                        default:
-                            cout << "Opcion invalida. Intente nuevamente.\n";
-                    }
-                } while (opcion_cuenta != 0);
-                break;
-            }
-            case 2: {
-                int opcion_prestamo;
-                do {
-                    cout << "\nOpciones de Prestamo\n";
-                    cout << "1. Solicitar prestamo\n";
-                    cout << "2. Mostrar prestamos\n";
-                    cout << "0. Volver al menu principal\n";
-                    cout << "Seleccione una opcion: ";
-                    cin >> opcion_prestamo;
-
-                    switch (opcion_prestamo) {
-                        case 1:
-                            solicitarPrestamo();
-                            break;
-                        case 2:
-                            mostrarPrestamos();
-                            break;
-                        case 0:
-                            break;
-                        default:
-                            cout << "Opcion invalida. Intente nuevamente.\n";
-                    }
-                } while (opcion_prestamo != 0);
-                break;
-            }
-            case 3: {
-                int opcion_transaccion;
-                do {
-                    cout << "\nOpciones de Transacciones\n";
-                    cout << "1. Registrar transaccion\n";
-                    cout << "2. Mostrar transacciones\n";
-                    cout << "0. Volver al menu principal\n";
-                    cout << "Seleccione una opcion: ";
-                    cin >> opcion_transaccion;
-
-                    switch (opcion_transaccion) {
-                        case 1: {
-                            char cuenta[13], descripcion[50];
-                            double monto;
-                            char tipo;
-                            cout << "Ingrese el numero de cuenta: ";
-                            cin >> cuenta;
-                            cout << "Ingrese la descripcion: ";
-                            cin.ignore();
-                            cin.getline(descripcion, 50);
-                            cout << "Ingrese el monto: ";
-                            cin >> monto;
-                            cout << "Ingrese el tipo de transaccion (D para deposito, R para retiro): ";
-                            cin >> tipo;
-                            registrarTransaccion(cuenta, descripcion, monto, tipo);
-                            break;
-                        }
-                        case 2:
-                            mostrarTransacciones();
-                            break;
-                        case 0:
-                            break;
-                        default:
-                            cout << "Opcion invalida. Intente nuevamente.\n";
-                    }
-                } while (opcion_transaccion != 0);
-                break;
-            }
-            case 4:
-                cout << "Gracias por usar nuestro sistema. Adios!\n";
-                break;
-            default:
-                cout << "Opcion invalida. Intente nuevamente.\n";
+    for (int i = 0; i < numUsuarios; ++i) {
+        if (usuarios[i].nombre == nombre && usuarios[i].password == password) {
+            return true;
         }
-    } while (opcion != 4);
+    }
+    return false;
+}
+
+void iniciarSesion(Usuario usuarios[], int numUsuarios) {
+    string nombre;
+    if (iniciarSesion(usuarios, numUsuarios, nombre)) {
+        cout << "Inicio de sesion exitoso. Bienvenido, " << nombre << ".\n";
+        escribirEnArchivo("Inicio de sesion del usuario: " + nombre);
+
+        int opcionMenuPrincipal;
+        do {
+            mostrarMenuPrincipal();
+            cin >> opcionMenuPrincipal;
+            switch (opcionMenuPrincipal) {
+                case 1: {
+                    int opcionTransacciones;
+                    do {
+                        mostrarMenuTransacciones();
+                        cin >> opcionTransacciones;
+                        double cantidad;
+                        switch (opcionTransacciones) {
+                            case 1: {
+                                cout << "Ingrese la cantidad a depositar en Cuenta 1: ";
+                                cin >> cantidad;
+                                depositar(saldoCuenta1, cantidad);
+                                break;
+                            }
+                            case 2: {
+                                cout << "Ingrese la cantidad a retirar de Cuenta 1: ";
+                                cin >> cantidad;
+                                retirar(saldoCuenta1, cantidad);
+                                break;
+                            }
+                            case 3:
+                                consultarSaldo(saldoCuenta1, 1);
+                                break;
+                            case 4: {
+                                cout << "Ingrese la cantidad a depositar en Cuenta 2: ";
+                                cin >> cantidad;
+                                depositar(saldoCuenta2, cantidad);
+                                break;
+                            }
+                            case 5: {
+                                cout << "Ingrese la cantidad a retirar de Cuenta 2: ";
+                                cin >> cantidad;
+                                retirar(saldoCuenta2, cantidad);
+                                break;
+                            }
+                            case 6:
+                                consultarSaldo(saldoCuenta2, 2);
+                                break;
+                            case 7: {
+                                cout << "Ingrese la cantidad a transferir de Cuenta 1 a Cuenta 2: ";
+                                cin >> cantidad;
+                                transferir(saldoCuenta1, saldoCuenta2, cantidad);
+                                break;
+                            }
+                            case 8: {
+                                cout << "Ingrese la cantidad a transferir a otro banco: ";
+                                cin >> cantidad;
+                                transferirOtroBanco(saldoCuenta1, cantidad);
+                                break;
+                            }
+                            case 9:
+                                break;
+                            default:
+                                cout << "Opcion invalida. Intente nuevamente.\n";
+                                break;
+                        }
+                    } while (opcionTransacciones != 9);
+                    break;
+                }
+                case 2: {
+                    int opcionPrestamos;
+                    do {
+                        mostrarMenuPrestamos();
+                        cin >> opcionPrestamos;
+                        double cantidad;
+                        switch (opcionPrestamos) {
+                            case 1:
+                                solicitarPrestamo();
+                                break;
+                            case 2:
+                                consultarSaldoPrestamo();
+                                break;
+                            case 3: {
+                                cout << "Ingrese la cantidad a pagar del prestamo: ";
+                                cin >> cantidad;
+                                realizarPagoPrestamo(saldoCuenta1, cantidad);
+                                break;
+                            }
+                            case 4:
+                                generarResumenPrestamo();
+                                break;
+                            case 5:
+                                break;
+                            default:
+                                cout << "Opcion invalida. Intente nuevamente.\n";
+                                break;
+                        }
+                    } while (opcionPrestamos != 5);
+                    break;
+                }
+                case 3: {
+                    int opcionServicios;
+                    do {
+                        mostrarMenuServicios();
+                        cin >> opcionServicios;
+                        double cantidad;
+                        switch (opcionServicios) {
+                            case 1: {
+                                cout << "Ingrese la cantidad a pagar por el servicio de luz: ";
+                                cin >> cantidad;
+                                pagarServicio(saldoCuenta1, "Luz", cantidad);
+                                break;
+                            }
+                            case 2: {
+                                cout << "Ingrese la cantidad a pagar por el servicio de agua: ";
+                                cin >> cantidad;
+                                pagarServicio(saldoCuenta1, "Agua", cantidad);
+                                break;
+                            }
+                            case 3: {
+                                cout << "Ingrese la cantidad a pagar por el servicio de internet: ";
+                                cin >> cantidad;
+                                pagarServicio(saldoCuenta1, "Internet", cantidad);
+                                break;
+                            }
+                            case 4:
+                                break;
+                            default:
+                                cout << "Opcion invalida. Intente nuevamente.\n";
+                                break;
+                        }
+                    } while (opcionServicios != 4);
+                    break;
+                }
+                case 4: {
+                    int opcionTarjetaCredito;
+                    do {
+                        mostrarMenuTarjetaCredito();
+                        cin >> opcionTarjetaCredito;
+                        double cantidad;
+                        switch (opcionTarjetaCredito) {
+                            case 1: {
+                                cout << "Ingrese el numero de la tarjeta de credito: ";
+                                cin >> tarjeta.numero;
+                                cout << "Ingrese el nombre del titular: ";
+                                cin >> tarjeta.titular;
+                                cout << "Ingrese el limite de credito: ";
+                                cin >> tarjeta.limite_credito;
+                                tarjeta.saldo = 0;
+                                tarjeta.pagos_a_tiempo = 0;
+                                tarjeta.puntos = 0;
+                                cout << "Tarjeta de credito creada con exito.\n";
+                                escribirEnArchivo("Creacion de tarjeta de credito. Numero: " + tarjeta.numero + ", Titular: " + tarjeta.titular + ", Limite: $" + to_string(tarjeta.limite_credito));
+                                break;
+                            }
+                            case 2: {
+                                cout << "Ingrese la cantidad a pagar de la tarjeta de credito: ";
+                                cin >> cantidad;
+                                pagarTarjetaCredito(saldoCuenta1, cantidad);
+                                break;
+                            }
+                            case 3: {
+                                consultarSaldoTarjetaCredito();
+                                break;
+                            }
+                            case 4:
+                                break;
+                            default:
+                                cout << "Opcion invalida. Intente nuevamente.\n";
+                                break;
+                        }
+                    } while (opcionTarjetaCredito != 4);
+                    break;
+                }
+                case 5:
+                    cout << "Cerrando sesion...\n";
+                    escribirEnArchivo("Cierre de sesion del usuario: " + nombre);
+                    break;
+                default:
+                    cout << "Opcion invalida. Intente nuevamente.\n";
+                    break;
+            }
+        } while (opcionMenuPrincipal != 5);
+    } else {
+        cout << "Credenciales incorrectas. Intente nuevamente.\n";
+        escribirEnArchivo("Intento de inicio de sesion fallido para el usuario: " + nombre);
+    }
 }
 
 int main() {
-    main_menu();
+    int numUsuarios = 2;
+    Usuario usuarios[numUsuarios];
+
+    // Creación de usuarios
+    usuarios[0].nombre = "admin";
+    usuarios[0].password = "admin123";
+    usuarios[1].nombre = "user";
+    usuarios[1].password = "user123";
+
+    escribirEnArchivo("Inicio del sistema bancario");
+
+    // Inicio de sesión del usuario
+    iniciarSesion(usuarios, numUsuarios);
+
+    escribirEnArchivo("Cierre del sistema bancario");
     return 0;
 }
