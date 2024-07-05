@@ -1,7 +1,5 @@
 General:
-  -Mejorar Rotulos de Transacciones {Referencias {Facturas}} 
   -Archivos de Cabecera {Contienen Estructuras y Funciones} 
-  -Determinar si se usara cordobas o dolares {depende de la opcion convertir de uno a otro}
   -Modulo Transacciones: Completado 100%
   //Añadir Cierre de Cuentas
   -Modulo Prestamos: Completado 100% TXT 
@@ -11,8 +9,6 @@ General:
 
 Modulo Seguridad:
   Empleado : "BAC123". 
-  -Idea: Para la Contraseña del Cliente y Empleado agarrar los primeros 3 caracteres de su numbre y cumpleaños
-  -Cuando se solicite la modificacion de algo aadir preguntas de seugridad
 
 Modulo Prestamos:
 Añadir al resumen numero de cliente.
