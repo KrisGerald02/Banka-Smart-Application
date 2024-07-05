@@ -11,6 +11,11 @@ double tasaInteresAnual = 0.05; // Tasa de interes anual del 5%
 int plazoMeses = 0;
 double saldoInicial = 0.0;
 
+
+void limpiarPantalla() {
+    system("cls");  // Cambia esto a "clear" si estás en un sistema Unix/Linux
+}
+
 void escribirEnArchivo(const char* mensaje) {
     FILE* archivo = fopen("transacciones.txt", "a");
     if (archivo == NULL) {
