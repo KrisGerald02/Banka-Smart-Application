@@ -1,10 +1,22 @@
 #include <iostream>
 #include <iomanip>
+#include <cstdio>
+#include <cstring>
+#include <regex>
+#include <cmath>
 #include "contenedor_cuenta.h"
 #include "contenedor_prestamo.h"
 #include "contenedor_transacciones.h"
 
 using namespace std;
+
+// Estructura para manejar datos de préstamo
+struct Prestamo {
+    double saldoPrestamo;
+    double tasaInteresAnual;
+    int plazoMeses;
+    double saldoInicial;
+};
 
 //INICIO CUENTA
 FILE *ptrF;
@@ -225,353 +237,232 @@ void cuenta_ahorro() {
             printf("Error al abrir el archivo\n");
         } else {
             fprintf(ptrF, "%s %s %s %s %s %.2f %d %d %d\n", numero_cuenta, cuenta.nombre, cuenta.email, cuenta.direccion, cuenta.numero, saldo_inicial, d_nacimiento, m_nacimiento, a_nacimiento);
-            printf("Cuenta guardada exitosamente en el archivo!\n");
-            printf("Numero de cuenta: %s\n", numero_cuenta);
-            printf("Contraseña: %s\n", contrasena);
             fclose(ptrF);
         }
     } else {
-        printf("Verifique los campos ingresados\n");
+        printf("No se pudo crear la cuenta debido a datos invalidos.\n");
     }
 }
 
-void cuenta_chiqui() {
-    // Lógica para la cuenta chiqui
+//INICIO PRESTAMOS
+void calcularSaldoPrestamo(Prestamo& prestamo) {
+    prestamo.saldoPrestamo = prestamo.saldoInicial;
+    double tasaInteresMensual = prestamo.tasaInteresAnual / 12.0 / 100.0;
+
+    for (int i = 0; i < prestamo.plazoMeses; ++i) {
+        prestamo.saldoPrestamo *= (1 + tasaInteresMensual);
+    }
 }
 
-void cuenta_universitaria() {
-    // Lógica para la cuenta universitaria
+void imprimirDetallePrestamo(const Prestamo& prestamo) {
+    cout << fixed << setprecision(2);
+    cout << "Saldo inicial del prestamo: $" << prestamo.saldoInicial << endl;
+    cout << "Tasa de interes anual: " << prestamo.tasaInteresAnual << "%" << endl;
+    cout << "Plazo del prestamo: " << prestamo.plazoMeses << " meses" << endl;
+    cout << "Saldo total del prestamo despues del plazo: $" << prestamo.saldoPrestamo << endl;
 }
 
-int main() {
-    int opcion;
+void solicitarPrestamo() {
+    Prestamo prestamo;
+    cout << "Ingrese el saldo inicial del prestamo: ";
+    cin >> prestamo.saldoInicial;
+    cout << "Ingrese la tasa de interes anual (en porcentaje): ";
+    cin >> prestamo.tasaInteresAnual;
+    cout << "Ingrese el plazo del prestamo (en meses): ";
+    cin >> prestamo.plazoMeses;
 
-    do {
-        printf("\nSeleccione el tipo de cuenta que desea abrir:\n");
-        printf("1. Cuenta de Ahorro\n");
-        printf("2. Cuenta Chiqui\n");
-        printf("3. Cuenta Universitaria\n");
-        printf("4. Actualizar cuenta\n");
-        printf("5. Generar informe\n");
-        printf("0. Salir\n");
-        printf("Seleccione una opción: ");
-        scanf("%d", &opcion);
+    calcularSaldoPrestamo(prestamo);
+    imprimirDetallePrestamo(prestamo);
 
-        switch(opcion) {
-            case 1:
-                cuenta_ahorro();
-                break;
-            case 2:
-                cuenta_chiqui();
-                break;
-            case 3:
-                cuenta_universitaria();
-                break;
-            case 4:
-                actualizar_cuenta("cuenta_ahorro.txt");
-                break;
-            case 5:
-                generar_informe("cuenta_ahorro.txt");
-                break;
-            case 0:
-                printf("Saliendo...\n");
-                break;
-            default:
-                printf("Opción invalida. Por favor intente nuevamente.\n");
-        }
-    } while(opcion != 0);
-
-    return 0;
-}
- 
- //FIN CUENTA
-
-//INICIO PRESTAMO
-
-void limpiarPantalla() {
-    system("cls");  // Cambia esto a "clear" si estás en un sistema Unix/Linux
-}
-
-void escribirEnArchivo(const char* mensaje) {
-    FILE* archivo = fopen("transacciones.txt", "a");
-    if (archivo == NULL) {
-        printf("\nNo se pudo abrir/crear el archivo.");
+    // Guardar los datos del préstamo en un archivo
+    FILE *archivoPrestamos = fopen("prestamos.txt", "a");
+    if (archivoPrestamos == NULL) {
+        cout << "Error al abrir el archivo de prestamos." << endl;
         return;
     }
-    fprintf(archivo, "%s", mensaje);
-    fclose(archivo);
+
+    fprintf(archivoPrestamos, "%.2f %.2f %d %.2f\n", prestamo.saldoInicial, prestamo.tasaInteresAnual, prestamo.plazoMeses, prestamo.saldoPrestamo);
+    fclose(archivoPrestamos);
 }
 
-void escribirResumen(double saldoInicial, double montoPago, double saldoActualizado) {
-    FILE* archivo = fopen("resumen_prestamo.txt", "a");
-    if (archivo == NULL) {
-        printf("\nNo se pudo abrir/crear el archivo.");
+void mostrarPrestamos() {
+    FILE *archivoPrestamos = fopen("prestamos.txt", "r");
+    if (archivoPrestamos == NULL) {
+        cout << "No se encontraron datos de prestamos." << endl;
         return;
     }
-    fprintf(archivo, "%-15s%-15s%-20s\n", "Saldo Inicial", "Monto del Pago", "Saldo Actualizado");
-    fprintf(archivo, "%-15.2f%-15.2f%-20.2f\n", saldoInicial, montoPago, saldoActualizado);
-    fclose(archivo);
 
-    // También mostrar en la terminal
-    cout << "\n--- Resumen del Prestamo ---\n";
-    cout << "Saldo Inicial: " << saldoInicial << "\n";
-    cout << "Monto del Pago: " << montoPago << "\n";
-    cout << "Saldo Actualizado: " << saldoActualizado << "\n";
-}
-
-double calcularPagoMensual(double montoPrestamo, double tasaInteresAnual, int plazoMeses) {
-    double tasaInteresMensual = tasaInteresAnual / 12.0;
-    return (montoPrestamo * tasaInteresMensual) / (1 - pow(1 + tasaInteresMensual, -plazoMeses));
-}
-
-void solicitarPrestamo(Prestamo &prestamo, double monto, double tasaInteresAnual, int plazoMeses) {
-    prestamo.saldoPrestamo = monto;
-    prestamo.saldoInicial = monto;
-    cout << "Has solicitado un prestamo de $" << monto << ".\n";
-    char buffer[256];
-    snprintf(buffer, sizeof(buffer), "Has solicitado un prestamo de $%.2f.\n", monto);
-    escribirEnArchivo(buffer);
-    
-    double pagoMensual = calcularPagoMensual(monto, tasaInteresAnual, plazoMeses);
-    cout << "El pago mensual sera de $" << pagoMensual << " durante " << plazoMeses << " meses.\n";
-    snprintf(buffer, sizeof(buffer), "El pago mensual sera de $%.2f durante %d meses.\n", pagoMensual, plazoMeses);
-    escribirEnArchivo(buffer);
-    prestamo.plazoMeses = plazoMeses;
-}
-
-void consultarSaldoPrestamo(const Prestamo &prestamo) {
-    cout << "Saldo actual del prestamo: $" << prestamo.saldoPrestamo << ".\n";
-    char buffer[256];
-    snprintf(buffer, sizeof(buffer), "Saldo actual del prestamo: $%.2f.\n", prestamo.saldoPrestamo);
-    escribirEnArchivo(buffer);
-}
-
-void realizarPagoPrestamo(Prestamo &prestamo, double cantidad) {
-    if (cantidad > 0 && cantidad <= prestamo.saldoPrestamo) {
-        double saldoAnterior = prestamo.saldoPrestamo;
-        prestamo.saldoPrestamo -= cantidad;
-        cout << "Has realizado un pago de $" << cantidad << " del prestamo.\n";
-        char buffer[256];
-        snprintf(buffer, sizeof(buffer), "Has realizado un pago de $%.2f del prestamo.\n", cantidad);
-        escribirEnArchivo(buffer);
-        escribirResumen(saldoAnterior, cantidad, prestamo.saldoPrestamo);
-    } else {
-        cout << "Saldo Insuficiente.\n";
-        escribirEnArchivo("Saldo Insuficiente.\n");
+    Prestamo prestamo;
+    cout << "Detalles de los prestamos registrados:" << endl;
+    cout << "--------------------------------------" << endl;
+    while (fscanf(archivoPrestamos, "%lf %lf %d %lf", &prestamo.saldoInicial, &prestamo.tasaInteresAnual, &prestamo.plazoMeses, &prestamo.saldoPrestamo) != EOF) {
+        imprimirDetallePrestamo(prestamo);
+        cout << "--------------------------------------" << endl;
     }
+    fclose(archivoPrestamos);
 }
 
-void mostrarMenu() {
-    cout << "\n--- Menu de Prestamos del Banco ---\n";
-    cout << "1. Solicitar prestamo\n";
-    cout << "2. Consultar saldo del prestamo\n";
-    cout << "3. Realizar pago del prestamo\n";
-    cout << "4. Generar resumen del prestamo\n";
-    cout << "5. Salir\n";
-    cout << "Elige una opcion: ";
-}
-
-bool verificarRequisitos(double salario, int edad) {
-    bool requisitosCumplidos = true;
-    if (salario < 15000) {
-        cout << "Salario insuficiente. Debes tener un salario minimo de C$15000.\n";
-        escribirEnArchivo("Salario insuficiente. Debes tener un salario minimo de C$15000.\n");
-        requisitosCumplidos = false;
-    }
-    if (edad <= 21) {
-        cout << "Debes tener mas de 21 anos para solicitar un prestamo.\n";
-        escribirEnArchivo("Debes tener mas de 21 anos para solicitar un prestamo.\n");
-        requisitosCumplidos = false;
-    }
-    return requisitosCumplidos;
-}
-
-int main() {
-    int opcion;
-    double cantidad;
+//INICIO TRANSACCIONES
+struct Transaccion {
+    char fecha[11];
+    char descripcion[50];
     double monto;
-    int plazo;
-    double salario;
-    int edad;
-    Prestamo prestamo = {0.0, 0.05, 0, 0.0};
-
-    do {
-        mostrarMenu();
-        cin >> opcion;
-
-        switch (opcion) {
-            case 1:
-                cout << "Introduce tu salario: ";
-                cin >> salario;
-                cout << "Introduce tu edad: ";
-                cin >> edad;
-                if (verificarRequisitos(salario, edad)) {
-                    cout << "Introduce el monto del prestamo: ";
-                    cin >> monto;
-                    cout << "Introduce el plazo en meses: ";
-                    cin >> plazo;
-                    solicitarPrestamo(prestamo, monto, prestamo.tasaInteresAnual, plazo);
-                }
-                limpiarPantalla();
-                break;
-            case 2:
-                consultarSaldoPrestamo(prestamo);
-                limpiarPantalla();
-                break;
-            case 3:
-                cout << "Introduce la cantidad a pagar del prestamo: ";
-                cin >> cantidad;
-                realizarPagoPrestamo(prestamo, cantidad);
-                limpiarPantalla();
-                break;
-            case 4:
-                if (prestamo.saldoInicial > 0) {
-                    escribirResumen(prestamo.saldoInicial, 0, prestamo.saldoPrestamo);
-                    cout << "Resumen del prestamo generado en 'resumen_prestamo.txt'.\n";
-                } else {
-                    cout << "No hay prestamos realizados para generar un resumen.\n";
-                }
-                limpiarPantalla();
-                break;
-            case 5:
-                cout << "Saliendo...\n";
-                escribirEnArchivo("Saliendo...\n");
-                limpiarPantalla();
-                break;
-            default:
-                cout << "Opcion invalida. Intenta de nuevo.\n";
-                escribirEnArchivo("Opcion invalida. Intenta de nuevo.\n");
-        }
-
-        if (opcion != 5) {
-            cout << "Presiona Enter para continuar...";
-            cin.ignore(); // Ignora el salto de línea previo
-            cin.get(); // Espera a que el usuario presione Enter
-            limpiarPantalla();
-        }
-
-    } while (opcion != 5);
-
-    return 0;
-}
-
-
-//INICIO DE SESION
-#include <iostream>
-#include <regex>
-#include <string.h>
-#include <time.h>
-#include <iomanip>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-
- //INICIO DE SESION
- struct Cuenta {
-    char numero_cuenta[13];
-    string contrasena;
+    char tipo; // 'D' para depósito, 'R' para retiro
 };
 
-// Función para generar una contraseña basada en el nombre y día de nacimiento
-string generar_contraseña(const string& nombre, int dia_nacimiento) {
-    string primera_parte = nombre.substr(0, 3);  // Obtiene los primeros 3 caracteres del nombre
-    string segunda_parte = to_string(dia_nacimiento);  // Convierte el día de nacimiento a string
-    return primera_parte + segunda_parte;  // Concatena las dos partes
-}
+void registrarTransaccion(const char* cuenta, const char* descripcion, double monto, char tipo) {
+    Transaccion transaccion;
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    sprintf(transaccion.fecha, "%02d/%02d/%04d", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900);
+    strncpy(transaccion.descripcion, descripcion, sizeof(transaccion.descripcion) - 1);
+    transaccion.monto = monto;
+    transaccion.tipo = tipo;
 
-// Función para validar el inicio de sesión de empleados
-bool iniciar_sesion_empleado(const string& numero_cuenta, const string& contrasena) {
-    // Aquí podrías implementar la lógica para validar el inicio de sesión del empleado
-    // Por ejemplo, podrías verificar en una lista de cuentas de empleados autorizados
-    // En este caso, por simplicidad, devolvemos true si el número de cuenta y la contraseña coinciden
-    return (numero_cuenta == "empleado" && contrasena == "contraseña_empleado");
-}
-
-// Función para validar el inicio de sesión de clientes
-bool iniciar_sesion_cliente(const string& numero_cuenta, const string& contrasena) {
-    ifstream archivo("clientes.txt");  // Archivo donde se guardan los datos de clientes
-    if (!archivo) {
-        cerr << "Error al abrir el archivo de clientes." << endl;
-        return false;
+    FILE *archivoTransacciones = fopen("transacciones.txt", "a");
+    if (archivoTransacciones == NULL) {
+        printf("Error al abrir el archivo de transacciones.\n");
+        return;
     }
 
-    Cuenta cuenta_cliente;
-    bool encontrado = false;
+    fprintf(archivoTransacciones, "%s %s %.2f %c\n", transaccion.fecha, transaccion.descripcion, transaccion.monto, transaccion.tipo);
+    fclose(archivoTransacciones);
+}
 
-    // Leer datos de cliente del archivo
-    while (archivo >> cuenta_cliente.numero_cuenta >> cuenta_cliente.contrasena) {
-        if (numero_cuenta == cuenta_cliente.numero_cuenta && contrasena == cuenta_cliente.contrasena) {
-            encontrado = true;
-            break;
-        }
+void mostrarTransacciones() {
+    FILE *archivoTransacciones = fopen("transacciones.txt", "r");
+    if (archivoTransacciones == NULL) {
+        printf("No se encontraron transacciones.\n");
+        return;
     }
 
-    archivo.close();
-    return encontrado;
+    Transaccion transaccion;
+    printf("Detalles de las transacciones registradas:\n");
+    printf("------------------------------------------\n");
+    while (fscanf(archivoTransacciones, "%s %s %lf %c", transaccion.fecha, transaccion.descripcion, &transaccion.monto, &transaccion.tipo) != EOF) {
+        printf("Fecha: %s\n", transaccion.fecha);
+        printf("Descripcion: %s\n", transaccion.descripcion);
+        printf("Monto: %.2f\n", transaccion.monto);
+        printf("Tipo: %c\n", transaccion.tipo);
+        printf("------------------------------------------\n");
+    }
+    fclose(archivoTransacciones);
 }
 
-void limpiarPantalla() {
-    system("cls");  // Cambia esto a "clear" si estás en un sistema Unix/Linux
-}
-
-int main() {
+void main_menu() {
     int opcion;
-    bool salir = false;
-
     do {
-        cout << "Bienvenido al sistema de inicio de sesion" << endl;
-        cout << "1. Inicio de sesion para empleados" << endl;
-        cout << "2. Inicio de sesion para clientes" << endl;
-        cout << "0. Salir" << endl;
+        cout << "Menu Principal\n";
+        cout << "1. Opciones de Cuenta\n";
+        cout << "2. Opciones de Prestamo\n";
+        cout << "3. Opciones de Transacciones\n";
+        cout << "4. Salir\n";
         cout << "Seleccione una opcion: ";
         cin >> opcion;
-        cin.ignore(); // Limpiar el buffer de entrada
 
         switch (opcion) {
             case 1: {
-                string numero_cuenta, contrasena;
-                cout << "Inicio de sesion para empleados" << endl;
-                cout << "Ingrese el numero de cuenta: ";
-                getline(cin, numero_cuenta);
-                cout << "Ingrese la contrasena: ";
-                getline(cin, contrasena);
+                int opcion_cuenta;
+                do {
+                    cout << "\nOpciones de Cuenta\n";
+                    cout << "1. Crear cuenta de ahorro\n";
+                    cout << "2. Actualizar cuenta\n";
+                    cout << "3. Generar informe de cuenta\n";
+                    cout << "0. Volver al menu principal\n";
+                    cout << "Seleccione una opcion: ";
+                    cin >> opcion_cuenta;
 
-                if (iniciar_sesion_empleado(numero_cuenta, contrasena)) {
-                    cout << "Inicio de sesion exitoso como empleado." << endl;
-                    // Aquí puedes agregar las acciones que pueden realizar los empleados
-                    // Por ejemplo, llamar a funciones para actualizar cuentas o generar informes
-                } else {
-                    cout << "Error: Numero de cuenta o contrasena incorrectos." << endl;
-                }
+                    switch (opcion_cuenta) {
+                        case 1:
+                            cuenta_ahorro();
+                            break;
+                        case 2:
+                            actualizar_cuenta("cuenta_ahorro.txt");
+                            break;
+                        case 3:
+                            generar_informe("cuenta_ahorro.txt");
+                            break;
+                        case 0:
+                            break;
+                        default:
+                            cout << "Opcion invalida. Intente nuevamente.\n";
+                    }
+                } while (opcion_cuenta != 0);
                 break;
             }
             case 2: {
-                string numero_cuenta, contrasena;
-                cout << "Inicio de sesion para clientes" << endl;
-                cout << "Ingrese el numero de cuenta: ";
-                getline(cin, numero_cuenta);
-                cout << "Ingrese la contrasena: ";
-                getline(cin, contrasena);
+                int opcion_prestamo;
+                do {
+                    cout << "\nOpciones de Prestamo\n";
+                    cout << "1. Solicitar prestamo\n";
+                    cout << "2. Mostrar prestamos\n";
+                    cout << "0. Volver al menu principal\n";
+                    cout << "Seleccione una opcion: ";
+                    cin >> opcion_prestamo;
 
-                if (iniciar_sesion_cliente(numero_cuenta, contrasena)) {
-                    cout << "Inicio de sesion exitoso como cliente." << endl;
-                    // Aquí puedes agregar las acciones que pueden realizar los clientes
-                    // Por ejemplo, llamar a funciones para actualizar cuentas o generar informes
-                } else {
-                    cout << "Error: Numero de cuenta o contrasena incorrectos." << endl;
-                }
+                    switch (opcion_prestamo) {
+                        case 1:
+                            solicitarPrestamo();
+                            break;
+                        case 2:
+                            mostrarPrestamos();
+                            break;
+                        case 0:
+                            break;
+                        default:
+                            cout << "Opcion invalida. Intente nuevamente.\n";
+                    }
+                } while (opcion_prestamo != 0);
                 break;
             }
-            case 0:
-                salir = true;
+            case 3: {
+                int opcion_transaccion;
+                do {
+                    cout << "\nOpciones de Transacciones\n";
+                    cout << "1. Registrar transaccion\n";
+                    cout << "2. Mostrar transacciones\n";
+                    cout << "0. Volver al menu principal\n";
+                    cout << "Seleccione una opcion: ";
+                    cin >> opcion_transaccion;
+
+                    switch (opcion_transaccion) {
+                        case 1: {
+                            char cuenta[13], descripcion[50];
+                            double monto;
+                            char tipo;
+                            cout << "Ingrese el numero de cuenta: ";
+                            cin >> cuenta;
+                            cout << "Ingrese la descripcion: ";
+                            cin.ignore();
+                            cin.getline(descripcion, 50);
+                            cout << "Ingrese el monto: ";
+                            cin >> monto;
+                            cout << "Ingrese el tipo de transaccion (D para deposito, R para retiro): ";
+                            cin >> tipo;
+                            registrarTransaccion(cuenta, descripcion, monto, tipo);
+                            break;
+                        }
+                        case 2:
+                            mostrarTransacciones();
+                            break;
+                        case 0:
+                            break;
+                        default:
+                            cout << "Opcion invalida. Intente nuevamente.\n";
+                    }
+                } while (opcion_transaccion != 0);
+                break;
+            }
+            case 4:
+                cout << "Gracias por usar nuestro sistema. Adios!\n";
                 break;
             default:
-                cout << "Opcion invalida, por favor intente nuevamente." << endl;
+                cout << "Opcion invalida. Intente nuevamente.\n";
         }
-    } while (!salir);
-
-    cout << "Gracias por usar nuestro sistema de inicio de sesion." << endl;
-
-    return 0;
+    } while (opcion != 4);
 }
 
+int main() {
+    main_menu();
+    return 0;
+}
