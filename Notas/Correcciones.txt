@@ -4,7 +4,8 @@ General:
   -Determinar si se usara cordobas o dolares {depende de la opcion convertir de uno a otro}
   -Modulo Transacciones: Completado 100%
   //Añadir Cierre de Cuentas
-  -Modulo Prestamos: Completado 100% TXT
+  -Modulo Prestamos: Completado 100% TXT 
+//Añador calculo de edad
   -Modulo Cuentas: Completado 100% TXT
   -Modulo Informe: Prestamos 95%
 
