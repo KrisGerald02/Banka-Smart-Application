@@ -444,12 +444,15 @@ int main() {
                 switch (tipo_cuenta) {
                     case 1:
                         cuenta_ahorro();
+                        limpiarPantalla();
                         break;
                     case 2:
                         cuenta_chiqui();
+                        limpiarPantalla();
                         break;
                     case 3:
                         cuenta_universitaria();
+                        limpiarPantalla();
                         break;
                     default:
                         cout << "Opcion de cuenta invalida" << endl;
@@ -467,12 +470,15 @@ int main() {
                 switch (tipo_cuenta) {
                     case 1:
                         actualizar_cuenta("cuenta_ahorro.txt");
+                        limpiarPantalla();
                         break;
                     case 2:
                         actualizar_cuenta("cuenta_chiqui.txt");
+                        limpiarPantalla();
                         break;
                     case 3:
                         actualizar_cuenta("cuenta_universitaria.txt");
+                        limpiarPantalla();
                         break;
                     default:
                         cout << "Opcion de cuenta invalida" << endl;
@@ -490,12 +496,15 @@ int main() {
                 switch (tipo_cuenta) {
                     case 1:
                         generar_informe("cuenta_ahorro.txt");
+                        limpiarPantalla();
                         break;
                     case 2:
                         generar_informe_chiqui();
+                        limpiarPantalla();
                         break;
                     case 3:
                         generar_informe_universitaria();
+                        limpiarPantalla();
                         break;
                     default:
                         cout << "Opcion de cuenta invalida" << endl;
