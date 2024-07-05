@@ -1,3 +1,14 @@
+#include <iostream>
+#include <regex>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <iomanip>
+
+using namespace std;
+
+
 //INICIO DE SESION
  struct Cuenta {
     char numero_cuenta[13];
