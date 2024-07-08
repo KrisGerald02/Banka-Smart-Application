@@ -7,18 +7,12 @@
 #include <iomanip>
 #include <fstream>
 #include <math.h>
+#include"contenedores.hpp"
 
 using namespace std;
 
 FILE *ptrF;
 
-struct Cuenta {
-    char nombre[50];
-    char email[50];
-    char direccion[100];
-    char numero[9];
-    char f_nacimiento[11];
-} cuenta;
 
 // Función para generar una contraseña basada en el nombre y día de nacimiento
 string generar_contraseña(const string& nombre, int dia_nacimiento) {
@@ -27,9 +21,6 @@ string generar_contraseña(const string& nombre, int dia_nacimiento) {
     return primera_parte + segunda_parte;  // Concatena las dos partes
 }
 
-void limpiarPantalla() {
-    system("cls");  // Cambia esto a "clear" si estás en un sistema Unix/Linux
-}
 
 // Validación de correo electrónico usando regex
 bool validacion_email(const char* email) {
