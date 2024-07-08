@@ -1,21 +1,14 @@
 General:
-  -Archivos de Cabecera {Contienen Estructuras y Funciones} 
   -Modulo Transacciones: Completado 100%
-  //Añadir Cierre de Cuentas
   -Modulo Prestamos: Completado 100% TXT 
-//Añador calculo de edad
   -Modulo Cuentas: Completado 100% TXT
-  -Modulo Informe: Prestamos 95%
-
-Modulo Seguridad:
-  Empleado : "BAC123". 
-
-Modulo Prestamos:
-Añadir al resumen numero de cliente.
+  -Modulo Informe: Completado 100% TXT
+  -Modulo Seguridad: Completado 100% TXT
+//Añador calculo de edad
 
 csv extension
 fstream
-std::cout << " - (x" << productos_facturados[i].unidades_compradas << ") - $" << (productos_facturados[i].precio * productos_facturados[i].unidades_compradas) << std::endl;
+cout << " - (x" << productos_facturados[i].unidades_compradas << ") - $" << (productos_facturados[i].precio * productos_facturados[i].unidades_compradas) << std::endl;
         }
         total += (productos_facturados[i].precio * productos_facturados[i].unidades_compradas);
     }
@@ -49,7 +42,3 @@ void facturarMain(InventoryItems arr[], int inv_cant) {
     } while (opcion != 2);
 }
 
-
-
-Nota:
-El modulo de seguridad se fusionara con el de cuentas una vez que este completado al 100%
