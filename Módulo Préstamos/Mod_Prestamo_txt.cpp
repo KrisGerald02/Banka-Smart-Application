@@ -1,3 +1,4 @@
+//INICIO PRESTAMO
 #include <iostream>
 #include <math.h> // Para pow
 #include <stdio.h> // Para FILE y funciones relacionadas
@@ -9,6 +10,11 @@ double saldoPrestamo = 0.0;
 double tasaInteresAnual = 0.05; // Tasa de interes anual del 5%
 int plazoMeses = 0;
 double saldoInicial = 0.0;
+
+
+void limpiarPantalla() {
+    system("cls");  // Cambia esto a "clear" si estás en un sistema Unix/Linux
+}
 
 void escribirEnArchivo(const char* mensaje) {
     FILE* archivo = fopen("transacciones.txt", "a");
@@ -78,10 +84,6 @@ void realizarPagoPrestamo(double &saldoPrestamo, double cantidad) {
     }
 }
 
-void limpiarPantalla() {
-    system("cls");
-}
-
 void mostrarMenu() {
     cout << "\n--- Menu de Prestamos del Banco ---\n";
     cout << "1. Solicitar prestamo\n";
@@ -133,14 +135,17 @@ int main() {
                     solicitarPrestamo(saldoPrestamo, monto, tasaInteresAnual, plazo);
                     plazoMeses = plazo;
                 }
+                limpiarPantalla();
                 break;
             case 2:
                 consultarSaldoPrestamo(saldoPrestamo);
+                limpiarPantalla();
                 break;
             case 3:
                 cout << "Introduce la cantidad a pagar del prestamo: ";
                 cin >> cantidad;
                 realizarPagoPrestamo(saldoPrestamo, cantidad);
+                limpiarPantalla();
                 break;
             case 4:
                 if (saldoInicial > 0) {
@@ -149,10 +154,12 @@ int main() {
                 } else {
                     cout << "No hay prestamos realizados para generar un resumen.\n";
                 }
+                limpiarPantalla();
                 break;
             case 5:
                 cout << "Saliendo...\n";
                 escribirEnArchivo("Saliendo...\n");
+                limpiarPantalla();
                 break;
             default:
                 cout << "Opcion invalida. Intenta de nuevo.\n";
@@ -170,3 +177,4 @@ int main() {
 
     return 0;
 }
+// FIN PRESTAMO
