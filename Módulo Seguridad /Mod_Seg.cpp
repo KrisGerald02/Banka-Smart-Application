@@ -1,39 +1,107 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include <iostream>
+#include <fstream>
+#include <string>
 
-// Función para generar una contraseña aleatoria
-void generarContrasena(char* contrasena, int longitud) {
-    const char caracteres[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()";
-    int numCaracteres = sizeof(caracteres) - 1;
-    
-    srand(time(0)); // Inicializar la aleatoriedad
-    
-    for (int i = 0; i < longitud; ++i) {
-        contrasena[i] = caracteres[rand() % numCaracteres];
-    }
-    //Añade un caracter nulo al final de la contraseña
-    contrasena[longitud] = '\0';  
+using namespace std;
+
+struct Cuenta {
+    char numero_cuenta[13];
+    string contrasena;
+};
+
+string generar_contraseña(const string& nombre, int dia_nacimiento) {
+    string primera_parte = nombre.substr(0, 3);
+    string segunda_parte = to_string(dia_nacimiento);
+    return primera_parte + segunda_parte;
 }
 
-//Funcion Principal
+bool iniciar_sesion_empleado(const string& numero_cuenta, const string& contrasena) {
+    return (numero_cuenta == "empleado" && contrasena == "contraseña_empleado");
+}
+
+bool iniciar_sesion_cliente(const string& numero_cuenta, const string& contrasena) {
+    ifstream archivo("clientes.txt");
+    if (!archivo.is_open()) {
+        cerr << "Error al abrir el archivo de clientes." << endl;
+        return false;
+    }
+
+    Cuenta cuenta_cliente;
+    bool encontrado = false;
+
+    while (archivo >> cuenta_cliente.numero_cuenta >> cuenta_cliente.contrasena) {
+        if (numero_cuenta == cuenta_cliente.numero_cuenta && contrasena == cuenta_cliente.contrasena) {
+            encontrado = true;
+            break;
+        }
+    }
+
+    archivo.close();
+    return encontrado;
+}
+
+void limpiarPantalla() {
+    // Cambiar a "clear" si estás en un sistema Unix/Linux
+    system("cls");
+}
+
 int main() {
-    //Identificadores
-    char usuario[50];
-    int longitudContrasena = 12;
-    char contrasena[longitudContrasena + 1];
-    
-    printf("Introduce el nombre del usuario: ");
-    scanf("%49s", usuario);
-    
-    generarContrasena(contrasena, longitudContrasena);
-    
-    printf("Usuario: %s\n", usuario);
-    printf("Contrasena generada: %s\n", contrasena);
-    
+    int opcion;
+    bool salir = false;
+
+    do {
+        cout << "Bienvenido al sistema de inicio de sesion" << endl;
+        cout << "1. Inicio de sesion para empleados" << endl;
+        cout << "2. Inicio de sesion para clientes" << endl;
+        cout << "0. Salir" << endl;
+        cout << "Seleccione una opcion: ";
+        cin >> opcion;
+        cin.ignore(); // Limpiar el buffer de entrada
+
+        switch (opcion) {
+            case 1: {
+                string numero_cuenta, contrasena;
+                cout << "Inicio de sesion para empleados" << endl;
+                cout << "Ingrese el numero de cuenta: ";
+                cin.ignore(); // Limpiar el buffer de entrada antes de getline
+                getline(cin, numero_cuenta);
+                cout << "Ingrese la contrasena: ";
+                getline(cin, contrasena);
+
+                if (iniciar_sesion_empleado(numero_cuenta, contrasena)) {
+                    cout << "Inicio de sesion exitoso como empleado." << endl;
+                    // Acciones de empleados
+                } else {
+                    cout << "Error: Numero de cuenta o contrasena incorrectos." << endl;
+                }
+                break;
+            }
+            case 2: {
+                string numero_cuenta, contrasena;
+                cout << "Inicio de sesion para clientes" << endl;
+                cout << "Ingrese el numero de cuenta: ";
+                cin.ignore(); // Limpiar el buffer de entrada antes de getline
+                getline(cin, numero_cuenta);
+                cout << "Ingrese la contrasena: ";
+                getline(cin, contrasena);
+
+                if (iniciar_sesion_cliente(numero_cuenta, contrasena)) {
+                    cout << "Inicio de sesion exitoso como cliente." << endl;
+                    // Acciones de clientes
+                } else {
+                    cout << "Error: Numero de cuenta o contrasena incorrectos." << endl;
+                }
+                break;
+            }
+            case 0:
+                salir = true;
+                break;
+            default:
+                cout << "Opcion invalida, por favor intente nuevamente." << endl;
+        }
+    } while (!salir);
+
+    cout << "Gracias por usar nuestro sistema de inicio de sesion." << endl;
+
     return 0;
 }
-
-//Generar contraseñas con digitos especificos al inicio para reconocer el tipo de usuario (cliente o empleado)
-//Ej: Cliente : "CL123", Empleado : "BAC123".
-//Idea: Para la Contraseña del Cliente y Empleado agarrar los primeros 3 caracteres de su numbre y cumpleaños
