@@ -1,4 +1,14 @@
 #include <iostream>
+#include <regex>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <iomanip>
+
+using namespace std;
+//INICIO TRANSACCIONES
+#include <iostream>
 #include <string>
 #include <fstream>
 
@@ -320,3 +330,5 @@ int main() {
 
     return 0;
 }
+ // FIN TRANSACCION
+
