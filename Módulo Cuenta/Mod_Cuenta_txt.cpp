@@ -53,6 +53,7 @@ string generar_numero_cuenta() {
     for (int i = 0; i < 12; ++i) {
         numero_cuenta += to_string(rand() % 10);
     }
+    cout << numero_cuenta;
     return numero_cuenta;
 }
 
@@ -93,7 +94,8 @@ void actualizar_cuenta(const char* nombre_archivo) {
                         cout << "\nIntroduzca el nuevo nombre: ";
                         cin.ignore();
                         cin.getline(nombre1, 50);
-                        strcpy(nombre, nombre1);
+                        memset(nombre, '\0', sizeof(nombre));
+                        strncpy(nombre, nombre1, sizeof(nombre) - 1); 
                         limpiarPantalla();
                         break;
                     case 2:
@@ -520,6 +522,3 @@ int main() {
 
     return 0;
 }
-
-
-// FIN CUENTA 
